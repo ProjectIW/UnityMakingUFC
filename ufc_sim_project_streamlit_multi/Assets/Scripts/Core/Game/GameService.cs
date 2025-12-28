@@ -47,7 +47,7 @@ namespace UFC.Core.Game
                     }
                     if (string.IsNullOrWhiteSpace(fighter.RatingHistory))
                     {
-                        double rating = Math.Round(fighter.Rating, 2);
+                        double rating = System.Math.Round(fighter.Rating, 2);
                         fighter.RatingHistory = SerializeHistory(new List<RatingHistoryEntry>
                         {
                             new RatingHistoryEntry { d = startDate.ToString("yyyy-MM-dd"), r = rating }
@@ -582,8 +582,8 @@ namespace UFC.Core.Game
                     {
                         continue;
                     }
-                    float score = 1000f - Math.Abs(a.Rating - b.Rating);
-                    score += 120f - 20f * Math.Abs(int.Parse(a.RankSlot) - int.Parse(b.RankSlot));
+                    float score = 1000f - System.MathF.Abs(a.Rating - b.Rating);
+                    score += 120f - 20f * System.Math.Abs(int.Parse(a.RankSlot) - int.Parse(b.RankSlot));
                     if (score > bestScore)
                     {
                         bestScore = score;
@@ -695,8 +695,8 @@ namespace UFC.Core.Game
             }
             int totalTarget = mainCardCount + prelimsCount;
             var targets = DivisionTargets(divisions, existingCounts, totalTarget);
-            int totalTopDesired = Math.Max(mainCardCount, existingTopByDiv.Values.Sum());
-            int remainingTop = Math.Max(0, totalTopDesired - existingTopByDiv.Values.Sum());
+            int totalTopDesired = System.Math.Max(mainCardCount, existingTopByDiv.Values.Sum());
+            int remainingTop = System.Math.Max(0, totalTopDesired - existingTopByDiv.Values.Sum());
             var topTargets = divisions.ToDictionary(d => d, d => existingTopByDiv.ContainsKey(d) ? existingTopByDiv[d] : 0);
             while (remainingTop > 0)
             {
@@ -730,10 +730,10 @@ namespace UFC.Core.Game
                 int unrExisting = existing.Count(f => f.IsTop15 == 0 && f.Status == "scheduled");
 
                 int targetTotal = targets.ContainsKey(div) ? targets[div] : topExisting + unrExisting;
-                int topTarget = Math.Min(topTargets[div], targetTotal);
-                int unrTarget = Math.Max(0, targetTotal - topTarget);
-                int topNeeded = Math.Max(0, topTarget - topExisting);
-                int unrNeeded = Math.Max(0, unrTarget - unrExisting);
+                int topTarget = System.Math.Min(topTargets[div], targetTotal);
+                int unrTarget = System.Math.Max(0, targetTotal - topTarget);
+                int topNeeded = System.Math.Max(0, topTarget - topExisting);
+                int unrNeeded = System.Math.Max(0, unrTarget - unrExisting);
 
                 var pairLastMap = GetPairLastMap(state.PairsByDivision[div]);
                 var topPool = Top15Only(state, div).Where(f => Available(f, eventDate) && !used.Contains(f.Id)).ToList();
@@ -751,7 +751,7 @@ namespace UFC.Core.Game
                     var a = topPool[0];
                     topPool.RemoveAt(0);
                     int aRank = int.Parse(a.RankSlot);
-                    var candidates = topPool.Where(b => Math.Abs(aRank - int.Parse(b.RankSlot)) <= 6).ToList();
+                    var candidates = topPool.Where(b => System.Math.Abs(aRank - int.Parse(b.RankSlot)) <= 6).ToList();
                     candidates = candidates.Where(b => !bookedPairs.Contains(Matchmaking.Matchmaking.PairKey(a.Id, b.Id))).ToList();
                     candidates = candidates.Where(b => !eventPairs.Contains(Matchmaking.Matchmaking.PairKey(a.Id, b.Id))).ToList();
                     if (allowSpecial && a.Streak >= 4)
@@ -808,7 +808,7 @@ namespace UFC.Core.Game
                 {
                     var a = unrPool[0];
                     unrPool.RemoveAt(0);
-                    var candidates = unrPool.Where(b => Math.Abs(a.Rating - b.Rating) <= 120f).ToList();
+                    var candidates = unrPool.Where(b => System.MathF.Abs(a.Rating - b.Rating) <= 120f).ToList();
                     candidates = candidates.Where(b => !bookedPairs.Contains(Matchmaking.Matchmaking.PairKey(a.Id, b.Id))).ToList();
                     candidates = candidates.Where(b => !eventPairs.Contains(Matchmaking.Matchmaking.PairKey(a.Id, b.Id))).ToList();
                     var poolFb = (candidates.Count > 0 ? candidates : unrPool)
@@ -868,11 +868,11 @@ namespace UFC.Core.Game
                     if (useTop)
                     {
                         int aRank = int.Parse(a.RankSlot);
-                        candidates = pool.Where(b => Math.Abs(aRank - int.Parse(b.RankSlot)) <= 6).ToList();
+                        candidates = pool.Where(b => System.Math.Abs(aRank - int.Parse(b.RankSlot)) <= 6).ToList();
                     }
                     else
                     {
-                        candidates = pool.Where(b => Math.Abs(a.Rating - b.Rating) <= 120f).ToList();
+                        candidates = pool.Where(b => System.MathF.Abs(a.Rating - b.Rating) <= 120f).ToList();
                     }
                     candidates = candidates.Where(b => !bookedPairs.Contains(Matchmaking.Matchmaking.PairKey(a.Id, b.Id))).ToList();
                     candidates = candidates.Where(b => !eventPairs.Contains(Matchmaking.Matchmaking.PairKey(a.Id, b.Id))).ToList();
@@ -969,7 +969,7 @@ namespace UFC.Core.Game
             rankedCandidates = rankedCandidates.OrderByDescending(x => x.Item1).ToList();
             unrankedCandidates = unrankedCandidates.OrderByDescending(x => x.Item1).ToList();
 
-            int mainSlots = Math.Min(mainCardCount, rankedCandidates.Count);
+            int mainSlots = System.Math.Min(mainCardCount, rankedCandidates.Count);
             for (int i = 0; i < mainSlots; i++)
             {
                 rankedCandidates[i].Item2.CardSlot = "MAIN_CARD";
@@ -980,7 +980,7 @@ namespace UFC.Core.Game
                 item.Item2.CardSlot = "PRELIMS";
             }
 
-            int remainingPrelims = Math.Max(0, prelimCount - unrankedCandidates.Count);
+            int remainingPrelims = System.Math.Max(0, prelimCount - unrankedCandidates.Count);
             if (remainingPrelims > 0)
             {
                 for (int i = mainSlots; i < rankedCandidates.Count && remainingPrelims > 0; i++)
@@ -1054,7 +1054,7 @@ namespace UFC.Core.Game
                     bool isTop = fight.IsTop15 == 1;
                     var pool = isTop ? topPool : unrPool;
                     var stay = FindFighter(state, div, stayId);
-                    var cand = pool.Where(p => Math.Abs(p.Rating - stay.Rating) <= (isTop ? 180f : 120f)).ToList();
+                    var cand = pool.Where(p => System.MathF.Abs(p.Rating - stay.Rating) <= (isTop ? 180f : 120f)).ToList();
                     var rep = Matchmaking.Matchmaking.PickBestOpponent(stay, cand.Count > 0 ? cand : pool, used, pairLastMap, eventDate, false);
                     if (rep == null)
                     {
@@ -1185,16 +1185,16 @@ namespace UFC.Core.Game
 
         private Dictionary<string, int> DivisionTargets(List<string> divisions, Dictionary<string, int> existingCounts, int totalFights)
         {
-            int maxPerDiv = divisions.Count < 3 ? totalFights : Math.Min(6, Math.Max(4, (int)(totalFights * 0.4)));
-            int minDivisions = Math.Min(3, divisions.Count);
+            int maxPerDiv = divisions.Count < 3 ? totalFights : System.Math.Min(6, System.Math.Max(4, (int)(totalFights * 0.4)));
+            int minDivisions = System.Math.Min(3, divisions.Count);
             var seeds = divisions.OrderBy(_ => _rng.Next()).Take(minDivisions).ToList();
             var targets = divisions.ToDictionary(d => d, d => existingCounts.ContainsKey(d) ? existingCounts[d] : 0);
             int remaining = totalFights - targets.Values.Sum();
 
             foreach (var div in seeds)
             {
-                int need = Math.Max(0, 2 - targets[div]);
-                int add = Math.Min(need, remaining);
+                int need = System.Math.Max(0, 2 - targets[div]);
+                int add = System.Math.Min(need, remaining);
                 targets[div] += add;
                 remaining -= add;
             }
@@ -1226,7 +1226,7 @@ namespace UFC.Core.Game
         private static void AppendRatingHistory(Fighter fighter, DateTime date)
         {
             var history = DeserializeRatingHistory(fighter.RatingHistory);
-            double rating = Math.Round(fighter.Rating, 2);
+            double rating = System.Math.Round(fighter.Rating, 2);
             history.Add(new RatingHistoryEntry { d = date.ToString("yyyy-MM-dd"), r = rating });
             fighter.RatingHistory = SerializeHistory(TrimHistory(history, 60));
         }
