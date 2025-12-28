@@ -29,8 +29,10 @@ namespace UFC.UI.Screens
 
             var today = DateUtil.ParseDateOrDefault(_state.Save.CurrentDate, new DateTime(2026, 1, 1));
             var upcoming = _state.Events
-                .Where(e => e.Completed == 0 && DateUtil.ParseDate(e.EventDate) >= today)
-                .OrderBy(e => DateUtil.ParseDate(e.EventDate))
+                .Select(e => new { Event = e, EventDate = DateUtil.ParseDate(e.EventDate) })
+                .Where(e => e.Event.Completed == 0 && e.EventDate.HasValue && e.EventDate.Value >= today)
+                .OrderBy(e => e.EventDate.Value)
+                .Select(e => e.Event)
                 .ToList();
 
             foreach (var ev in upcoming)

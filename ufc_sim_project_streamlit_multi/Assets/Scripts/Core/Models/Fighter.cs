@@ -38,7 +38,7 @@ namespace UFC.Core.Models
                 Age = ParseInt(row, "age"),
                 RankRaw = Get(row, "rank_raw"),
                 RankType = Get(row, "rank_type"),
-                RankSlot = Get(row, "rank_slot"),
+                RankSlot = NormalizeRankSlot(Get(row, "rank_slot")),
                 IsChamp = ParseInt(row, "is_champ"),
                 Wins = ParseInt(row, "wins"),
                 Draws = ParseInt(row, "draws"),
@@ -101,6 +101,26 @@ namespace UFC.Core.Models
                 return parsed;
             }
             return defaultValue;
+        }
+
+        private static string NormalizeRankSlot(string rankSlot)
+        {
+            if (string.IsNullOrWhiteSpace(rankSlot))
+            {
+                return string.Empty;
+            }
+            if (int.TryParse(rankSlot, out var parsed))
+            {
+                return parsed.ToString(CultureInfo.InvariantCulture);
+            }
+            if (float.TryParse(rankSlot, NumberStyles.Float, CultureInfo.InvariantCulture, out var floatParsed))
+            {
+                if (System.Math.Abs(floatParsed - System.MathF.Round(floatParsed)) < 0.001f)
+                {
+                    return ((int)System.MathF.Round(floatParsed)).ToString(CultureInfo.InvariantCulture);
+                }
+            }
+            return rankSlot;
         }
     }
 }
