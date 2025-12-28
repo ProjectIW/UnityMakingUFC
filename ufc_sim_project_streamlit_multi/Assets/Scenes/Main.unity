@@ -13,6 +13,8 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+  m_Component:
+  - component: {fileID: 2}
 --- !u!4 &2
 Transform:
   m_ObjectHideFlags: 0
