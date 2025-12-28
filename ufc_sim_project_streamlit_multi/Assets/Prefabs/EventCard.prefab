@@ -1,4 +1,4 @@
-%YAML 1.1
+--- !u!114%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &200000
 GameObject:
@@ -54,7 +54,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 200000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0000000000000000e000000000000000, type: 0}
+  m_Script: {fileID: 11500000, guid: 58593113b29b4d61879b9cdd822127b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -82,7 +82,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 200000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0000000000000000e000000000000000, type: 0}
+  m_Script: {fileID: 11500000, guid: d7b8b879ff244e399d1b1a73e8a10baf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 200006}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0000000000000000e000000000000000, type: 0}
+  m_Script: {fileID: 11500000, guid: 351dab8703f84a1e9709ac168bbd2802, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Text: Event Title
@@ -263,7 +263,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 200010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0000000000000000e000000000000000, type: 0}
+  m_Script: {fileID: 11500000, guid: 351dab8703f84a1e9709ac168bbd2802, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Text: Event Subtitle
