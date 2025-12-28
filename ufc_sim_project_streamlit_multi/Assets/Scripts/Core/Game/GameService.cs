@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UFC.Core.Calendar;
 using UFC.Core.Matchmaking;
@@ -7,6 +8,7 @@ using UFC.Core.Models;
 using UFC.Core.Ranking;
 using UFC.Core.Simulation;
 using UFC.Infrastructure.Data;
+using UnityEngine;
 
 namespace UFC.Core.Game
 {
@@ -48,7 +50,7 @@ namespace UFC.Core.Game
                     {
                         fighter.RatingHistory = SerializeHistory(new List<RatingHistoryEntry>
                         {
-                            new RatingHistoryEntry { d = startDate.ToString("yyyy-MM-dd"), r = fighter.Rating.ToString("F2") }
+                            new RatingHistoryEntry { d = startDate.ToString("yyyy-MM-dd"), r = fighter.Rating.ToString("F2", CultureInfo.InvariantCulture) }
                         });
                         changed = true;
                     }
@@ -1216,30 +1218,19 @@ namespace UFC.Core.Game
 
         private static List<string> JsonList(string json)
         {
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return new List<string>();
-            }
-            try
-            {
-                return System.Text.Json.JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
-            }
-            catch
-            {
-                return new List<string>();
-            }
+            return DeserializeList<string>(json);
         }
 
         private static string DumpJsonList(List<string> list)
         {
-            return System.Text.Json.JsonSerializer.Serialize(list ?? new List<string>());
+            return SerializeList(list);
         }
 
         private static void AppendRatingHistory(Fighter fighter, DateTime date)
         {
             var history = DeserializeRatingHistory(fighter.RatingHistory);
-            history.Add(new RatingHistoryEntry { d = date.ToString("yyyy-MM-dd"), r = fighter.Rating.ToString("F2") });
-            fighter.RatingHistory = SerializeHistory(history.TakeLast(60).ToList());
+            history.Add(new RatingHistoryEntry { d = date.ToString("yyyy-MM-dd"), r = fighter.Rating.ToString("F2", CultureInfo.InvariantCulture) });
+            fighter.RatingHistory = SerializeHistory(TrimHistory(history, 60));
         }
 
         private static void AppendRankHistory(Fighter fighter, DateTime date)
@@ -1251,56 +1242,78 @@ namespace UFC.Core.Game
                 rank = "0";
             }
             history.Add(new RankHistoryEntry { d = date.ToString("yyyy-MM-dd"), rank = rank });
-            fighter.RankHistory = SerializeHistory(history.TakeLast(60).ToList());
+            fighter.RankHistory = SerializeHistory(TrimHistory(history, 60));
         }
 
         private static List<RatingHistoryEntry> DeserializeRatingHistory(string json)
         {
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return new List<RatingHistoryEntry>();
-            }
-            try
-            {
-                return System.Text.Json.JsonSerializer.Deserialize<List<RatingHistoryEntry>>(json) ?? new List<RatingHistoryEntry>();
-            }
-            catch
-            {
-                return new List<RatingHistoryEntry>();
-            }
+            return DeserializeList<RatingHistoryEntry>(json);
         }
 
         private static List<RankHistoryEntry> DeserializeRankHistory(string json)
         {
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                return new List<RankHistoryEntry>();
-            }
-            try
-            {
-                return System.Text.Json.JsonSerializer.Deserialize<List<RankHistoryEntry>>(json) ?? new List<RankHistoryEntry>();
-            }
-            catch
-            {
-                return new List<RankHistoryEntry>();
-            }
+            return DeserializeList<RankHistoryEntry>(json);
         }
 
         private static string SerializeHistory<T>(List<T> history)
         {
-            return System.Text.Json.JsonSerializer.Serialize(history ?? new List<T>());
+            return SerializeList(history);
         }
 
+        private static List<T> TrimHistory<T>(List<T> history, int max)
+        {
+            if (history == null)
+            {
+                return new List<T>();
+            }
+            if (history.Count <= max)
+            {
+                return history;
+            }
+            return history.GetRange(history.Count - max, max);
+        }
+
+        private static List<T> DeserializeList<T>(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return new List<T>();
+            }
+            try
+            {
+                var wrapper = JsonUtility.FromJson<SerializableList<T>>(json);
+                return wrapper?.items ?? new List<T>();
+            }
+            catch
+            {
+                return new List<T>();
+            }
+        }
+
+        private static string SerializeList<T>(List<T> items)
+        {
+            var wrapper = new SerializableList<T> { items = items ?? new List<T>() };
+            return JsonUtility.ToJson(wrapper);
+        }
+
+        [Serializable]
+        private class SerializableList<T>
+        {
+            public List<T> items = new List<T>();
+        }
+
+        [Serializable]
         private class RatingHistoryEntry
         {
-            public string d { get; set; }
-            public string r { get; set; }
+            public string d;
+            public string r;
         }
 
+        [Serializable]
         private class RankHistoryEntry
         {
-            public string d { get; set; }
-            public string rank { get; set; }
+            public string d;
+            public string rank;
         }
     }
 }

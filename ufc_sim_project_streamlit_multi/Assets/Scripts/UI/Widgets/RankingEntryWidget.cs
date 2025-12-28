@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace UFC.UI.Widgets
 {
-    public class FightCardWidget : MonoBehaviour
+    public class RankingEntryWidget : MonoBehaviour
     {
         public Text Title;
         public Text Subtitle;
