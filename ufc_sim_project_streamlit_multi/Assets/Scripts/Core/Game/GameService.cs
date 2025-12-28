@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using Newtonsoft.Json;
 using UFC.Core.Calendar;
 using UFC.Core.Matchmaking;
 using UFC.Core.Models;
 using UFC.Core.Ranking;
 using UFC.Core.Simulation;
 using UFC.Infrastructure.Data;
-using UnityEngine;
 
 namespace UFC.Core.Game
 {
@@ -48,19 +47,16 @@ namespace UFC.Core.Game
                     }
                     if (string.IsNullOrWhiteSpace(fighter.RatingHistory))
                     {
+                        double rating = Math.Round(fighter.Rating, 2);
                         fighter.RatingHistory = SerializeHistory(new List<RatingHistoryEntry>
                         {
-                            new RatingHistoryEntry { d = startDate.ToString("yyyy-MM-dd"), r = fighter.Rating.ToString("F2", CultureInfo.InvariantCulture) }
+                            new RatingHistoryEntry { d = startDate.ToString("yyyy-MM-dd"), r = rating }
                         });
                         changed = true;
                     }
                     if (string.IsNullOrWhiteSpace(fighter.RankHistory))
                     {
-                        string rank = string.IsNullOrWhiteSpace(fighter.RankSlot) ? string.Empty : fighter.RankSlot;
-                        if (fighter.IsChamp == 1)
-                        {
-                            rank = "0";
-                        }
+                        int? rank = GetRankValue(fighter);
                         fighter.RankHistory = SerializeHistory(new List<RankHistoryEntry>
                         {
                             new RankHistoryEntry { d = startDate.ToString("yyyy-MM-dd"), rank = rank }
@@ -1229,18 +1225,15 @@ namespace UFC.Core.Game
         private static void AppendRatingHistory(Fighter fighter, DateTime date)
         {
             var history = DeserializeRatingHistory(fighter.RatingHistory);
-            history.Add(new RatingHistoryEntry { d = date.ToString("yyyy-MM-dd"), r = fighter.Rating.ToString("F2", CultureInfo.InvariantCulture) });
+            double rating = Math.Round(fighter.Rating, 2);
+            history.Add(new RatingHistoryEntry { d = date.ToString("yyyy-MM-dd"), r = rating });
             fighter.RatingHistory = SerializeHistory(TrimHistory(history, 60));
         }
 
         private static void AppendRankHistory(Fighter fighter, DateTime date)
         {
             var history = DeserializeRankHistory(fighter.RankHistory);
-            string rank = string.IsNullOrWhiteSpace(fighter.RankSlot) ? string.Empty : fighter.RankSlot;
-            if (fighter.IsChamp == 1)
-            {
-                rank = "0";
-            }
+            int? rank = GetRankValue(fighter);
             history.Add(new RankHistoryEntry { d = date.ToString("yyyy-MM-dd"), rank = rank });
             fighter.RankHistory = SerializeHistory(TrimHistory(history, 60));
         }
@@ -1281,10 +1274,9 @@ namespace UFC.Core.Game
             }
             try
             {
-                var wrapper = JsonUtility.FromJson<SerializableList<T>>(json);
-                return wrapper?.items ?? new List<T>();
+                return JsonConvert.DeserializeObject<List<T>>(json) ?? new List<T>();
             }
-            catch
+            catch (JsonException)
             {
                 return new List<T>();
             }
@@ -1292,28 +1284,38 @@ namespace UFC.Core.Game
 
         private static string SerializeList<T>(List<T> items)
         {
-            var wrapper = new SerializableList<T> { items = items ?? new List<T>() };
-            return JsonUtility.ToJson(wrapper);
-        }
-
-        [Serializable]
-        private class SerializableList<T>
-        {
-            public List<T> items = new List<T>();
+            return JsonConvert.SerializeObject(items ?? new List<T>());
         }
 
         [Serializable]
         private class RatingHistoryEntry
         {
             public string d;
-            public string r;
+            public double r;
         }
 
         [Serializable]
         private class RankHistoryEntry
         {
             public string d;
-            public string rank;
+            public int? rank;
+        }
+
+        private static int? GetRankValue(Fighter fighter)
+        {
+            if (fighter.IsChamp == 1)
+            {
+                return 0;
+            }
+            if (string.IsNullOrWhiteSpace(fighter.RankSlot))
+            {
+                return null;
+            }
+            if (int.TryParse(fighter.RankSlot, out var parsed))
+            {
+                return parsed;
+            }
+            return null;
         }
     }
 }

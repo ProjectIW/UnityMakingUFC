@@ -33,9 +33,9 @@ namespace UFC.Infrastructure
                 : DataRootOverride;
 
             _database = new GameDatabase(dataRoot);
+            _state = _database.LoadState();
             int? seed = TryParseSeed();
             _service = new GameService(_database, seed);
-            _state = _service.LoadState();
 
             var today = DateUtil.ParseDateOrDefault(_state.Save.CurrentDate, new DateTime(2026, 1, 1));
             _service.EnsureHistoriesInitialized(_state, today);
@@ -58,9 +58,9 @@ namespace UFC.Infrastructure
             var today = DateUtil.ParseDateOrDefault(_state.Save.CurrentDate, new DateTime(2026, 1, 1));
             _service.EnsureHistoriesInitialized(_state, today);
             _service.EnsureEventsPlanned(_state, today);
-            _service.RunEvent(_state, today);
             var nextDate = _service.AdvanceToNextWeek(_state);
             _service.EnsureEventsPlanned(_state, nextDate);
+            _service.RunEvent(_state, nextDate);
             _service.SaveState(_state);
             RefreshUi();
         }
