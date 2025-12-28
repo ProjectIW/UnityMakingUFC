@@ -26,13 +26,13 @@ namespace UFC.Core.Matchmaking
 
             float ra = fa.Rating;
             float rb = fb.Rating;
-            float score = 1000f - Math.Abs(ra - rb);
+            float score = 1000f - System.MathF.Abs(ra - rb);
 
             if (!string.IsNullOrWhiteSpace(fa.RankSlot) && !string.IsNullOrWhiteSpace(fb.RankSlot))
             {
                 int a = int.Parse(fa.RankSlot);
                 int b = int.Parse(fb.RankSlot);
-                score += 120f - 20f * Math.Abs(a - b);
+                score += 120f - 20f * System.Math.Abs(a - b);
                 if (a <= 5 && b <= 5)
                 {
                     score += 40f;
@@ -81,7 +81,7 @@ namespace UFC.Core.Matchmaking
 
         private static int ClampInt(int x, int lo, int hi)
         {
-            return Math.Max(lo, Math.Min(hi, x));
+            return System.Math.Max(lo, System.Math.Min(hi, x));
         }
     }
 }
