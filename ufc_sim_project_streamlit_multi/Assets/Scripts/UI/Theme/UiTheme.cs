@@ -18,13 +18,16 @@ namespace UFC.UI.Theme
 
         public static void EnsureInitialized(Component context)
         {
-            if (Initialized)
+            var canvas = context != null ? context.GetComponentInParent<Canvas>() : Object.FindObjectOfType<Canvas>();
+            if (!Initialized)
             {
-                return;
+                Initialize(canvas);
             }
 
-            var canvas = context != null ? context.GetComponentInParent<Canvas>() : Object.FindObjectOfType<Canvas>();
-            Initialize(canvas);
+            if (canvas != null)
+            {
+                ApplyGlobal(canvas);
+            }
         }
 
         public static void Initialize(Canvas canvas)
@@ -36,6 +39,16 @@ namespace UFC.UI.Theme
 
             PrimaryFont = Resources.Load<Font>("Fonts/UfcPrimary");
             HeadingFont = Resources.Load<Font>("Fonts/UfcHeading");
+
+            if (PrimaryFont == null)
+            {
+                PrimaryFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+
+            if (HeadingFont == null)
+            {
+                HeadingFont = PrimaryFont;
+            }
 
             if (canvas != null)
             {

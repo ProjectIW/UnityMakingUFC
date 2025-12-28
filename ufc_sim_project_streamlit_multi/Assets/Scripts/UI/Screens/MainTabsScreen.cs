@@ -3,13 +3,24 @@ using UFC.UI.Theme;
 
 namespace UFC.UI.Screens
 {
+    [ExecuteAlways]
     public class MainTabsScreen : MonoBehaviour
     {
         public GameObject RankingTab;
         public GameObject EventsTab;
         public GameObject PastEventsTab;
 
+        private void OnEnable()
+        {
+            UiTheme.EnsureInitialized(this);
+        }
+
         private void Awake()
+        {
+            UiTheme.EnsureInitialized(this);
+        }
+
+        private void OnValidate()
         {
             UiTheme.EnsureInitialized(this);
         }
