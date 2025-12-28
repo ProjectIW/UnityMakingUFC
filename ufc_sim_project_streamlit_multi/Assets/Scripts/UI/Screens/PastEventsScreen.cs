@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using UFC.Core.Game;
 using UFC.Core.Models;
+using UFC.Infrastructure.Data;
 using UFC.UI.Widgets;
 using UnityEngine;
 
