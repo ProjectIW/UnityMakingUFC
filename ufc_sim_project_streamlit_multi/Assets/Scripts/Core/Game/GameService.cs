@@ -188,7 +188,8 @@ namespace UFC.Core.Game
 
                 fight.Status = "completed";
                 fight.WinnerId = winnerId.ToString();
-                var (method, round, time) = FightSimulation.RandomMethodAndTime(_rng);
+                int maxRounds = fight.IsMainEvent == 1 || fight.IsTitleFight == 1 ? 5 : 3;
+                var (method, round, time) = FightSimulation.RandomMethodAndTime(_rng, maxRounds);
                 fight.Method = method;
                 fight.Round = round.ToString();
                 fight.TimeMmss = time;

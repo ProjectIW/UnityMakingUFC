@@ -62,13 +62,13 @@ namespace UFC.Core.Simulation
             };
         }
 
-        public static (string method, int round, string timeMmss) RandomMethodAndTime(System.Random rng)
+        public static (string method, int round, string timeMmss) RandomMethodAndTime(System.Random rng, int maxRounds)
         {
             double r = rng.NextDouble();
             if (r < 0.52)
             {
                 string[] methods = { "U-DEC", "S-DEC", "M-DEC" };
-                int round = 3;
+                int round = maxRounds;
                 int sec = rng.Next(10, 301);
                 return (methods[rng.Next(methods.Length)], round, FormatMmss(sec));
             }
@@ -81,17 +81,15 @@ namespace UFC.Core.Simulation
                     "TKO (ground and pound)",
                     "TKO (doctor stoppage)"
                 };
-                int[] rounds = { 1, 1, 2, 2, 3 };
-                int round = rounds[rng.Next(rounds.Length)];
-                int sec = rng.Next(10, round < 3 ? 291 : 301);
+                int round = rng.Next(1, maxRounds + 1);
+                int sec = rng.Next(10, round < maxRounds ? 291 : 301);
                 return (methods[rng.Next(methods.Length)], round, FormatMmss(sec));
             }
             else
             {
                 string[] methods = { "SUB (RNC)", "SUB (Armbar)", "SUB (Guillotine)", "SUB (Triangle)", "SUB (Kimura)" };
-                int[] rounds = { 1, 2, 2, 3 };
-                int round = rounds[rng.Next(rounds.Length)];
-                int sec = rng.Next(10, round < 3 ? 291 : 301);
+                int round = rng.Next(1, maxRounds + 1);
+                int sec = rng.Next(10, round < maxRounds ? 291 : 301);
                 return (methods[rng.Next(methods.Length)], round, FormatMmss(sec));
             }
         }
