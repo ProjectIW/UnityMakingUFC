@@ -5,6 +5,7 @@ using UFC.Core.Models;
 using UFC.Infrastructure.Data;
 using UFC.UI.Widgets;
 using UnityEngine;
+using UFC.UI.Theme;
 
 namespace UFC.UI.Screens
 {
@@ -19,6 +20,10 @@ namespace UFC.UI.Screens
 
         public void Refresh(GameState state)
         {
+            UiTheme.EnsureInitialized(this);
+            UiTheme.EnsureListLayout(EventsListRoot);
+            UiTheme.EnsureListLayout(FightListRoot);
+
             _state = state;
             if (_state == null || EventsListRoot == null || EventCardPrefab == null)
             {

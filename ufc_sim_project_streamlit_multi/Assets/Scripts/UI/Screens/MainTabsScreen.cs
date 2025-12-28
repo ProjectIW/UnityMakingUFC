@@ -1,4 +1,5 @@
 using UnityEngine;
+using UFC.UI.Theme;
 
 namespace UFC.UI.Screens
 {
@@ -7,6 +8,11 @@ namespace UFC.UI.Screens
         public GameObject RankingTab;
         public GameObject EventsTab;
         public GameObject PastEventsTab;
+
+        private void Awake()
+        {
+            UiTheme.EnsureInitialized(this);
+        }
 
         public void ShowRanking()
         {
