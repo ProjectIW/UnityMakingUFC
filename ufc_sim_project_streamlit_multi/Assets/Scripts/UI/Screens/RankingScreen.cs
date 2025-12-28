@@ -6,6 +6,7 @@ using UFC.Core.Models;
 using UFC.Infrastructure.Data;
 using UnityEngine;
 using UFC.UI.Widgets;
+using UFC.UI.Theme;
 
 namespace UFC.UI.Screens
 {
@@ -16,6 +17,9 @@ namespace UFC.UI.Screens
 
         public void Refresh(GameState state)
         {
+            UiTheme.EnsureInitialized(this);
+            UiTheme.EnsureListLayout(ListRoot);
+
             if (state == null || ListRoot == null || EntryPrefab == null)
             {
                 return;
