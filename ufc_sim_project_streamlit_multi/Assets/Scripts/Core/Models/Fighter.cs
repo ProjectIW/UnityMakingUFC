@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace UFC.Core.Models
 {
@@ -68,7 +69,7 @@ namespace UFC.Core.Models
                 {"wins", Wins.ToString()},
                 {"draws", Draws.ToString()},
                 {"losses", Losses.ToString()},
-                {"rating", Rating.ToString("F2")},
+                {"rating", Rating.ToString("F2", CultureInfo.InvariantCulture)},
                 {"streak", Streak.ToString()},
                 {"last_fight_date", LastFightDate ?? string.Empty},
                 {"next_available_date", NextAvailableDate ?? string.Empty},
@@ -94,7 +95,8 @@ namespace UFC.Core.Models
 
         private static float ParseFloat(Dictionary<string, string> row, string key, float defaultValue = 0f)
         {
-            if (row != null && row.TryGetValue(key, out var value) && float.TryParse(value, out var parsed))
+            if (row != null && row.TryGetValue(key, out var value)
+                && float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
             {
                 return parsed;
             }
