@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 501}
   - component: {fileID: 502}
   - component: {fileID: 503}
+  - component: {fileID: 8414}
 --- !u!224 &501
 RectTransform:
   m_ObjectHideFlags: 0
@@ -497,6 +498,7 @@ GameObject:
   - component: {fileID: 551}
   - component: {fileID: 552}
   - component: {fileID: 553}
+  - component: {fileID: 8415}
 --- !u!224 &551
 RectTransform:
   m_ObjectHideFlags: 0
@@ -695,6 +697,7 @@ GameObject:
   - component: {fileID: 581}
   - component: {fileID: 582}
   - component: {fileID: 583}
+  - component: {fileID: 8416}
 --- !u!224 &581
 RectTransform:
   m_ObjectHideFlags: 0
@@ -893,6 +896,7 @@ GameObject:
   - component: {fileID: 611}
   - component: {fileID: 612}
   - component: {fileID: 613}
+  - component: {fileID: 8417}
 --- !u!224 &611
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1176,6 +1180,7 @@ GameObject:
   - component: {fileID: 621}
   - component: {fileID: 622}
   - component: {fileID: 623}
+  - component: {fileID: 8418}
 --- !u!224 &621
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1268,6 +1273,7 @@ GameObject:
   - component: {fileID: 6211}
   - component: {fileID: 6212}
   - component: {fileID: 6213}
+  - component: {fileID: 8419}
 --- !u!224 &6211
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1462,6 +1468,7 @@ GameObject:
   - component: {fileID: 721}
   - component: {fileID: 722}
   - component: {fileID: 723}
+  - component: {fileID: 8420}
 --- !u!224 &721
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1554,6 +1561,7 @@ GameObject:
   - component: {fileID: 7211}
   - component: {fileID: 7212}
   - component: {fileID: 7213}
+  - component: {fileID: 8421}
 --- !u!224 &7211
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1660,6 +1668,7 @@ GameObject:
   - component: {fileID: 741}
   - component: {fileID: 742}
   - component: {fileID: 743}
+  - component: {fileID: 8422}
 --- !u!224 &741
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1752,6 +1761,7 @@ GameObject:
   - component: {fileID: 7411}
   - component: {fileID: 7412}
   - component: {fileID: 7413}
+  - component: {fileID: 8423}
 --- !u!224 &7411
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1946,6 +1956,7 @@ GameObject:
   - component: {fileID: 821}
   - component: {fileID: 822}
   - component: {fileID: 823}
+  - component: {fileID: 8424}
 --- !u!224 &821
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2038,6 +2049,7 @@ GameObject:
   - component: {fileID: 8211}
   - component: {fileID: 8212}
   - component: {fileID: 8213}
+  - component: {fileID: 8425}
 --- !u!224 &8211
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2144,6 +2156,7 @@ GameObject:
   - component: {fileID: 841}
   - component: {fileID: 842}
   - component: {fileID: 843}
+  - component: {fileID: 8426}
 --- !u!224 &841
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2236,6 +2249,7 @@ GameObject:
   - component: {fileID: 8411}
   - component: {fileID: 8412}
   - component: {fileID: 8413}
+  - component: {fileID: 8427}
 --- !u!224 &8411
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2341,6 +2355,7 @@ GameObject:
   m_Component:
   - component: {fileID: 901}
   - component: {fileID: 902}
+  - component: {fileID: 8428}
 --- !u!224 &901
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2387,3 +2402,138 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+
+--- !u!222 &8414
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8415
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 550}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8416
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 580}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8417
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 610}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8418
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 620}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8419
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6210}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8420
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8421
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7210}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8422
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8423
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7410}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8424
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8425
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8210}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8426
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8427
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8410}
+  m_CullTransparentMesh: 1
+
+--- !u!222 &8428
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900}
+  m_CullTransparentMesh: 1
