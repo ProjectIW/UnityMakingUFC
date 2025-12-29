@@ -35,13 +35,15 @@ namespace UFC.UI.Theme
 
             PrimaryFont = Resources.Load<Font>("Fonts/UfcPrimary");
             HeadingFont = Resources.Load<Font>("Fonts/UfcHeading");
-            if (PrimaryFont == null)
+
+            var fallbackFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            if (PrimaryFont == null || !SupportsReadableGlyphs(PrimaryFont))
             {
-                PrimaryFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                PrimaryFont = fallbackFont;
             }
-            if (HeadingFont == null)
+            if (HeadingFont == null || !SupportsReadableGlyphs(HeadingFont))
             {
-                HeadingFont = PrimaryFont;
+                HeadingFont = PrimaryFont ?? fallbackFont;
             }
 
             RoundedSquare = Resources.Load<Sprite>("UI/RoundedSquare");
@@ -397,6 +399,16 @@ namespace UFC.UI.Theme
             {
                 image.color = color;
             }
+        }
+
+        private static bool SupportsReadableGlyphs(Font font)
+        {
+            if (font == null)
+            {
+                return false;
+            }
+
+            return font.HasCharacter('A') && font.HasCharacter('0') && font.HasCharacter('А');
         }
     }
 }
