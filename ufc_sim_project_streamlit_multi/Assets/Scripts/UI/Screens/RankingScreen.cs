@@ -103,7 +103,7 @@ namespace UFC.UI.Screens
             RankingEntryWidget widget;
             if (RankingEntryPrefab != null)
             {
-                widget = Instantiate(RankingEntryPrefab, ListRoot);
+                widget = Instantiate(RankingEntryPrefab, ListRoot, false);
                 UiTheme.ApplyLayerFromParent(widget.gameObject, ListRoot);
             }
             else

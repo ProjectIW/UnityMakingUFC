@@ -85,7 +85,7 @@ namespace UFC.UI.Screens
             {
                 string title = $"{ev.EventDate} · {ev.EventKind}";
                 string subtitle = $"{ev.Location} {ev.ThemeCountry}".Trim();
-                var card = Instantiate(EventCardPrefab, EventsListRoot);
+                var card = Instantiate(EventCardPrefab, EventsListRoot, false);
                 UiTheme.ApplyLayerFromParent(card.gameObject, EventsListRoot);
                 var captured = ev;
                 card.Bind(title, subtitle, () => ShowEvent(captured));
@@ -118,7 +118,7 @@ namespace UFC.UI.Screens
                 string bName = FighterName(fight.Division, fight.BId);
                 string title = $"{aName} vs {bName}";
                 string subtitle = fight.IsTitleFight == 1 ? $"{fight.Division} · Title Fight" : fight.Division;
-                var card = Instantiate(FightCardPrefab, FightListRoot);
+                var card = Instantiate(FightCardPrefab, FightListRoot, false);
                 UiTheme.ApplyLayerFromParent(card.gameObject, FightListRoot);
                 card.Bind(title, subtitle);
             }
@@ -169,7 +169,7 @@ namespace UFC.UI.Screens
 
             foreach (var ev in previewEvents)
             {
-                var card = Instantiate(EventCardPrefab, EventsListRoot);
+                var card = Instantiate(EventCardPrefab, EventsListRoot, false);
                 UiTheme.ApplyLayerFromParent(card.gameObject, EventsListRoot);
                 card.Bind(ev.Title, ev.Subtitle, () => ShowPreviewFights());
             }
@@ -196,7 +196,7 @@ namespace UFC.UI.Screens
 
             foreach (var fight in previewFights)
             {
-                var card = Instantiate(FightCardPrefab, FightListRoot);
+                var card = Instantiate(FightCardPrefab, FightListRoot, false);
                 UiTheme.ApplyLayerFromParent(card.gameObject, FightListRoot);
                 card.Bind(fight.Title, fight.Subtitle);
             }
