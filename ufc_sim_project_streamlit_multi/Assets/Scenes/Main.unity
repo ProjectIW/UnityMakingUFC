@@ -228,7 +228,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SaveSlot: 1
-  DataRootOverride: 
+  DataRootOverride: Assets/StreamingAssets/BaseData
   RankingScreen: {fileID: 604}
   EventsScreen: {fileID: 704}
   PastEventsScreen: {fileID: 804}
