@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using UFC.Core.Models;
 using UFC.Infrastructure.Data;
@@ -16,11 +17,13 @@ namespace UFC.UI.Screens
         [FormerlySerializedAs("EntryPrefab")]
         public RankingEntryWidget RankingEntryPrefab;
 
+        private bool _needsPreviewRefresh;
+
         private void OnEnable()
         {
             if (!Application.isPlaying)
             {
-                RenderPreview();
+                SchedulePreview();
             }
         }
 
@@ -28,6 +31,15 @@ namespace UFC.UI.Screens
         {
             if (!Application.isPlaying)
             {
+                SchedulePreview();
+            }
+        }
+
+        private void Update()
+        {
+            if (!Application.isPlaying && _needsPreviewRefresh)
+            {
+                _needsPreviewRefresh = false;
                 RenderPreview();
             }
         }
@@ -96,9 +108,13 @@ namespace UFC.UI.Screens
             }
             else
             {
-                var entryObject = new GameObject("RankingEntry", typeof(RectTransform));
+                var entryObject = new GameObject("RankingEntry", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                 entryObject.transform.SetParent(ListRoot, false);
                 UiTheme.ApplyLayerFromParent(entryObject, ListRoot);
+                var background = entryObject.GetComponent<Image>();
+                background.color = UiTheme.PanelElevated;
+                background.sprite = UiTheme.RoundedSquare;
+                background.type = UiTheme.RoundedSquare != null ? Image.Type.Sliced : Image.Type.Simple;
                 widget = entryObject.AddComponent<RankingEntryWidget>();
             }
 
@@ -107,7 +123,22 @@ namespace UFC.UI.Screens
 
         private static int SafeRank(string rankSlot)
         {
-            return int.TryParse(rankSlot, out var parsed) ? parsed : int.MaxValue;
+            if (string.IsNullOrWhiteSpace(rankSlot))
+            {
+                return int.MaxValue;
+            }
+
+            if (int.TryParse(rankSlot, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
+            {
+                return parsed;
+            }
+
+            if (float.TryParse(rankSlot, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsedFloat))
+            {
+                return Mathf.RoundToInt(parsedFloat);
+            }
+
+            return int.MaxValue;
         }
 
         private void ClearList()
@@ -168,6 +199,11 @@ namespace UFC.UI.Screens
             }
 
             Destroy(item);
+        }
+
+        private void SchedulePreview()
+        {
+            _needsPreviewRefresh = true;
         }
     }
 }

@@ -18,12 +18,13 @@ namespace UFC.UI.Screens
         public FightCardWidget FightCardPrefab;
 
         private GameState _state;
+        private bool _needsPreviewRefresh;
 
         private void OnEnable()
         {
             if (!Application.isPlaying)
             {
-                RenderPreview();
+                SchedulePreview();
             }
         }
 
@@ -31,6 +32,15 @@ namespace UFC.UI.Screens
         {
             if (!Application.isPlaying)
             {
+                SchedulePreview();
+            }
+        }
+
+        private void Update()
+        {
+            if (!Application.isPlaying && _needsPreviewRefresh)
+            {
+                _needsPreviewRefresh = false;
                 RenderPreview();
             }
         }
@@ -200,6 +210,11 @@ namespace UFC.UI.Screens
             }
 
             Destroy(item);
+        }
+
+        private void SchedulePreview()
+        {
+            _needsPreviewRefresh = true;
         }
     }
 }
