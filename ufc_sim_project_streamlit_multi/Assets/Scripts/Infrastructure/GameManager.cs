@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UFC.Core.Game;
 using UFC.Infrastructure.Data;
 using UFC.Infrastructure.Save;
@@ -31,6 +32,14 @@ namespace UFC.Infrastructure
             var dataRoot = string.IsNullOrWhiteSpace(DataRootOverride)
                 ? SaveSlotsService.SlotDataPath(SaveSlot)
                 : DataRootOverride;
+            if (string.IsNullOrWhiteSpace(DataRootOverride) && !HasDivisionData(dataRoot))
+            {
+                var streamingRoot = Path.Combine(Application.streamingAssetsPath, "BaseData");
+                if (HasDivisionData(streamingRoot))
+                {
+                    dataRoot = streamingRoot;
+                }
+            }
 
             _database = new GameDatabase(dataRoot);
             _state = _database.LoadState();
@@ -94,6 +103,30 @@ namespace UFC.Infrastructure
                 return parsed;
             }
             return null;
+        }
+
+        private static bool HasDivisionData(string dataRoot)
+        {
+            if (string.IsNullOrWhiteSpace(dataRoot) || !Directory.Exists(dataRoot))
+            {
+                return false;
+            }
+
+            foreach (var dir in Directory.GetDirectories(dataRoot))
+            {
+                var name = Path.GetFileName(dir);
+                if (string.IsNullOrEmpty(name) || name == "_global")
+                {
+                    continue;
+                }
+
+                if (File.Exists(Path.Combine(dir, "fighters.csv")))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
