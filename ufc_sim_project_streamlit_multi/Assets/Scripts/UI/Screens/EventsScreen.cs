@@ -199,14 +199,7 @@ namespace UFC.UI.Screens
                 return;
             }
 
-            if (Application.isPlaying)
-            {
-                Destroy(item);
-            }
-            else
-            {
-                DestroyImmediate(item);
-            }
+            Destroy(item);
         }
     }
 }
