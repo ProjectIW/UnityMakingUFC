@@ -89,6 +89,7 @@ namespace UFC.UI.Widgets
 
             var avatarRoot = new GameObject("Avatar", typeof(RectTransform), typeof(Image), typeof(Mask));
             avatarRoot.transform.SetParent(row.transform, false);
+            UiTheme.ApplyLayerFromParent(avatarRoot, row.transform);
             var avatarImage = avatarRoot.GetComponent<Image>();
             avatarImage.sprite = UiTheme.RoundedSquare;
             avatarImage.type = UiTheme.RoundedSquare != null ? Image.Type.Sliced : Image.Type.Simple;
@@ -103,6 +104,7 @@ namespace UFC.UI.Widgets
 
             var avatarContent = new GameObject("AvatarImage", typeof(RectTransform), typeof(Image));
             avatarContent.transform.SetParent(avatarRoot.transform, false);
+            UiTheme.ApplyLayerFromParent(avatarContent, avatarRoot.transform);
             _avatarImage = avatarContent.GetComponent<Image>();
             _avatarImage.preserveAspect = true;
             _avatarImage.color = UiTheme.Panel;
