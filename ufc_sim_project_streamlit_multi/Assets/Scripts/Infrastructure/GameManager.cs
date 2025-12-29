@@ -52,6 +52,7 @@ namespace UFC.Infrastructure
 
             _database = new GameDatabase(dataRoot);
             _state = _database.LoadState();
+            EnsureFighterDataLoaded(dataRoot);
             int? seed = TryParseSeed();
             _service = new GameService(_database, seed);
 
@@ -189,6 +190,53 @@ namespace UFC.Infrastructure
                 }
 
                 if (File.Exists(Path.Combine(dir, "fighters.csv")))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void EnsureFighterDataLoaded(string dataRoot)
+        {
+            if (HasFighterData(_state))
+            {
+                return;
+            }
+
+            var streamingRoot = Path.Combine(Application.streamingAssetsPath, "BaseData");
+            if (string.IsNullOrWhiteSpace(streamingRoot) || !Directory.Exists(streamingRoot))
+            {
+                return;
+            }
+
+            if (string.Equals(dataRoot, streamingRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var fallbackDatabase = new GameDatabase(streamingRoot);
+            var fallbackState = fallbackDatabase.LoadState();
+            if (!HasFighterData(fallbackState))
+            {
+                return;
+            }
+
+            _database = fallbackDatabase;
+            _state = fallbackState;
+        }
+
+        private static bool HasFighterData(GameState state)
+        {
+            if (state?.FightersByDivision == null)
+            {
+                return false;
+            }
+
+            foreach (var division in state.FightersByDivision.Values)
+            {
+                if (division != null && division.Count > 0)
                 {
                     return true;
                 }

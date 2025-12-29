@@ -77,6 +77,8 @@ namespace UFC.UI.Screens
                     AddEntry(fighter, $"#{fighter.RankSlot}");
                 }
             }
+
+            FinalizeLayout();
         }
 
         private void ConfigureListRoot()
@@ -103,8 +105,13 @@ namespace UFC.UI.Screens
             RankingEntryWidget widget;
             if (RankingEntryPrefab != null)
             {
-                widget = Instantiate(RankingEntryPrefab, ListRoot, false);
-                UiTheme.ApplyLayerFromParent(widget.gameObject, ListRoot);
+                var instance = Instantiate(RankingEntryPrefab, ListRoot, false);
+                widget = instance.GetComponent<RankingEntryWidget>();
+                if (widget == null)
+                {
+                    widget = instance.gameObject.AddComponent<RankingEntryWidget>();
+                }
+                UiTheme.ApplyLayerFromParent(instance.gameObject, ListRoot);
             }
             else
             {
@@ -175,6 +182,23 @@ namespace UFC.UI.Screens
             AddEntry(PreviewFighter("C", "Jon Jones", 36, 27, 1, 0, 2012f), "C");
             AddEntry(PreviewFighter("#1", "Ciryl Gane", 33, 12, 2, 0, 1887f), "#1");
             AddEntry(PreviewFighter("#2", "Tom Aspinall", 31, 13, 3, 0, 1860f), "#2");
+
+            FinalizeLayout();
+        }
+
+        private void FinalizeLayout()
+        {
+            if (ListRoot == null)
+            {
+                return;
+            }
+
+            var rect = ListRoot as RectTransform;
+            if (rect != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
+            }
+            Canvas.ForceUpdateCanvases();
         }
 
         private static Fighter PreviewFighter(string rank, string name, int age, int wins, int losses, int draws, float rating)
