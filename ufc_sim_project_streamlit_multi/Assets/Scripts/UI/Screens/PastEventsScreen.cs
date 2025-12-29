@@ -6,6 +6,7 @@ using UFC.Infrastructure.Data;
 using UFC.UI.Widgets;
 using UnityEngine;
 using UFC.UI.Theme;
+using UnityEngine.UI;
 
 namespace UFC.UI.Screens
 {
@@ -82,6 +83,8 @@ namespace UFC.UI.Screens
             {
                 ShowEventResults(past[0]);
             }
+
+            FinalizeLayout(EventsListRoot);
         }
 
         private void ShowEventResults(EventRow ev)
@@ -111,6 +114,8 @@ namespace UFC.UI.Screens
                 UiTheme.ApplyLayerFromParent(card.gameObject, ResultsListRoot);
                 card.Bind(title, result);
             }
+
+            FinalizeLayout(ResultsListRoot);
         }
 
         private string WinnerName(FightRow fight, string aName, string bName)
@@ -177,6 +182,7 @@ namespace UFC.UI.Screens
             }
 
             ShowPreviewResults();
+            FinalizeLayout(EventsListRoot);
         }
 
         private void ShowPreviewResults()
@@ -202,6 +208,17 @@ namespace UFC.UI.Screens
                 UiTheme.ApplyLayerFromParent(card.gameObject, ResultsListRoot);
                 card.Bind(fight.Title, fight.Subtitle);
             }
+
+            FinalizeLayout(ResultsListRoot);
+        }
+
+        private static void FinalizeLayout(Transform root)
+        {
+            if (root is RectTransform rect)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
+            }
+            Canvas.ForceUpdateCanvases();
         }
 
         private static void DestroyItem(GameObject item)
