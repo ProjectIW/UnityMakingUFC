@@ -12,7 +12,7 @@ namespace UFC.UI.Widgets
         public void Bind(string title, string subtitle)
         {
             UiTheme.EnsureInitialized(this);
-            UiTheme.ApplyCardVisual(gameObject, 86f);
+            UiTheme.ApplyCardVisual(gameObject, 96f);
 
             if (Title != null)
             {

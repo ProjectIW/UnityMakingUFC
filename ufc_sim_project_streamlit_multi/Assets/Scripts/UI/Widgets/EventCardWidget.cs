@@ -14,7 +14,7 @@ namespace UFC.UI.Widgets
         public void Bind(string title, string subtitle, Action onClick = null)
         {
             UiTheme.EnsureInitialized(this);
-            UiTheme.ApplyCardVisual(gameObject, 92f);
+            UiTheme.ApplyCardVisual(gameObject, 104f);
 
             if (Title != null)
             {

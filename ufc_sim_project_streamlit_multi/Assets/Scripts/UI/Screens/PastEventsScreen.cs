@@ -72,7 +72,7 @@ namespace UFC.UI.Screens
             foreach (var ev in past)
             {
                 string title = $"{ev.EventDate} · {ev.EventKind}";
-                string subtitle = $"{ev.Location} {ev.ThemeCountry}".Trim();
+                string subtitle = BuildEventSubtitle(ev);
                 var card = Instantiate(EventCardPrefab, EventsListRoot, false);
                 UiTheme.ApplyLayerFromParent(card.gameObject, EventsListRoot);
                 var captured = ev;
@@ -110,6 +110,11 @@ namespace UFC.UI.Screens
                     ? $"{WinnerName(fight, aName, bName)} · {fight.Method} R{fight.Round} {fight.TimeMmss}"
                     : fight.Status;
                 string title = $"{aName} vs {bName}";
+                string ratingText = BuildFightRating(fight);
+                if (!string.IsNullOrWhiteSpace(ratingText))
+                {
+                    result = $"{result} · {ratingText}";
+                }
                 var card = Instantiate(FightCardPrefab, ResultsListRoot, false);
                 UiTheme.ApplyLayerFromParent(card.gameObject, ResultsListRoot);
                 card.Bind(title, result);
@@ -169,9 +174,9 @@ namespace UFC.UI.Screens
 
             var previewEvents = new[]
             {
-                new { Title = "28 Jul · UFC 299", Subtitle = "Miami, USA" },
-                new { Title = "13 Jul · UFC Fight Night", Subtitle = "London, UK" },
-                new { Title = "22 Jun · UFC 298", Subtitle = "Sydney, AU" }
+                new { Title = "28 Jul · UFC 299", Subtitle = "Miami, USA · Avg rating 1886" },
+                new { Title = "13 Jul · UFC Fight Night", Subtitle = "London, UK · Avg rating 1752" },
+                new { Title = "22 Jun · UFC 298", Subtitle = "Sydney, AU · Avg rating 1834" }
             };
 
             foreach (var ev in previewEvents)
@@ -196,10 +201,10 @@ namespace UFC.UI.Screens
 
             var previewResults = new[]
             {
-                new { Title = "Adesanya vs Strickland", Subtitle = "Strickland · Decision R5 5:00" },
-                new { Title = "Gaethje vs Holloway", Subtitle = "Holloway · KO R5 4:59" },
-                new { Title = "Weili vs Yan", Subtitle = "Weili · Decision R5 5:00" },
-                new { Title = "Pantoja vs Royval", Subtitle = "Pantoja · Submission R2 3:12" }
+                new { Title = "Adesanya vs Strickland", Subtitle = "Strickland · Decision R5 5:00 · Avg rating 1902" },
+                new { Title = "Gaethje vs Holloway", Subtitle = "Holloway · KO R5 4:59 · Avg rating 1864" },
+                new { Title = "Weili vs Yan", Subtitle = "Weili · Decision R5 5:00 · Avg rating 1835" },
+                new { Title = "Pantoja vs Royval", Subtitle = "Pantoja · Submission R2 3:12 · Avg rating 1804" }
             };
 
             foreach (var fight in previewResults)
@@ -219,6 +224,94 @@ namespace UFC.UI.Screens
                 LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
             }
             Canvas.ForceUpdateCanvases();
+        }
+
+        private string BuildEventSubtitle(EventRow ev)
+        {
+            string location = $"{ev.Location} {ev.ThemeCountry}".Trim();
+            string ratingText = BuildEventRating(ev.EventId);
+            if (string.IsNullOrWhiteSpace(ratingText))
+            {
+                return location;
+            }
+
+            if (string.IsNullOrWhiteSpace(location))
+            {
+                return ratingText;
+            }
+
+            return $"{location} · {ratingText}";
+        }
+
+        private string BuildEventRating(int eventId)
+        {
+            if (_state == null)
+            {
+                return string.Empty;
+            }
+
+            var ratings = _state.Fights
+                .Where(f => f.EventId == eventId)
+                .Select(BuildFightRatingValue)
+                .Where(r => r > 0f)
+                .ToList();
+
+            if (ratings.Count == 0)
+            {
+                return "Rating TBD";
+            }
+
+            return $"Avg rating {Mathf.RoundToInt(ratings.Average())}";
+        }
+
+        private string BuildFightRating(FightRow fight)
+        {
+            float rating = BuildFightRatingValue(fight);
+            if (rating <= 0f)
+            {
+                return "Rating TBD";
+            }
+
+            return $"Avg rating {Mathf.RoundToInt(rating)}";
+        }
+
+        private float BuildFightRatingValue(FightRow fight)
+        {
+            if (_state == null || fight == null)
+            {
+                return 0f;
+            }
+
+            float aRating = GetFighterRating(fight.Division, fight.AId);
+            float bRating = GetFighterRating(fight.Division, fight.BId);
+
+            if (aRating <= 0f && bRating <= 0f)
+            {
+                return 0f;
+            }
+
+            if (aRating <= 0f)
+            {
+                return bRating;
+            }
+
+            if (bRating <= 0f)
+            {
+                return aRating;
+            }
+
+            return (aRating + bRating) * 0.5f;
+        }
+
+        private float GetFighterRating(string division, int id)
+        {
+            if (_state == null || string.IsNullOrWhiteSpace(division) || !_state.FightersByDivision.ContainsKey(division))
+            {
+                return 0f;
+            }
+
+            var fighter = _state.FightersByDivision[division].FirstOrDefault(f => f.Id == id);
+            return fighter != null ? fighter.Rating : 0f;
         }
 
         private static void DestroyItem(GameObject item)

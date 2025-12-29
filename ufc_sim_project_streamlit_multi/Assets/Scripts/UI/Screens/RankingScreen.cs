@@ -56,6 +56,8 @@ namespace UFC.UI.Screens
             ConfigureListRoot();
             ClearList();
 
+            AddRatingFocusPanel();
+
             foreach (var division in state.FightersByDivision.Keys.OrderBy(d => d))
             {
                 AddHeader(division.ToUpperInvariant());
@@ -93,6 +95,39 @@ namespace UFC.UI.Screens
             var headerText = headerObject.GetComponent<Text>();
             headerText.alignment = TextAnchor.MiddleLeft;
             UiTheme.ApplyTextStyle(headerText, true, true);
+        }
+
+        private void AddRatingFocusPanel()
+        {
+            if (ListRoot == null)
+            {
+                return;
+            }
+
+            var panel = UiTheme.CreatePanel(ListRoot, UiTheme.Panel, 84f);
+            panel.name = "RatingFocusPanel";
+            UiTheme.StyleCardSurface(panel, 0f, addAccent: true, applyLayout: true);
+
+            var column = UiTheme.CreateColumn(panel.transform, 6f);
+            column.name = "Content";
+            var layout = column.GetComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(18, 18, 16, 16);
+            layout.childAlignment = TextAnchor.MiddleLeft;
+
+            var title = UiTheme.CreateText(column.transform, "Фокус на рейтингах", 18, UiTheme.TextHeading, true);
+            title.name = "RatingTitle";
+            var titleText = title.GetComponent<Text>();
+            titleText.alignment = TextAnchor.MiddleLeft;
+
+            var subtitle = UiTheme.CreateText(
+                column.transform,
+                "Обновления формы бойцов сразу отражаются в рейтинге и влияют на порядок в дивизионах.",
+                13,
+                UiTheme.TextMuted,
+                false);
+            subtitle.name = "RatingSubtitle";
+            var subtitleText = subtitle.GetComponent<Text>();
+            subtitleText.alignment = TextAnchor.MiddleLeft;
         }
 
         private void AddEntry(Fighter fighter, string rank)
@@ -167,6 +202,8 @@ namespace UFC.UI.Screens
 
             ConfigureListRoot();
             ClearList();
+
+            AddRatingFocusPanel();
 
             AddHeader("LIGHTWEIGHT");
             AddEntry(PreviewFighter("C", "Islam Makhachev", 32, 25, 1, 0, 1985f), "C");
