@@ -5,13 +5,19 @@ namespace UFC.UI.Theme
 {
     public static class UiTheme
     {
-        public static readonly Color Background = new Color(14f / 255f, 17f / 255f, 23f / 255f, 1f);
-        public static readonly Color Panel = new Color(38f / 255f, 39f / 255f, 48f / 255f, 1f);
-        public static readonly Color Accent = new Color(1f, 75f / 255f, 75f / 255f, 1f);
-        public static readonly Color TextPrimary = new Color(250f / 255f, 250f / 255f, 250f / 255f, 1f);
-        public static readonly Color TextMuted = new Color(160f / 255f, 164f / 255f, 175f / 255f, 1f);
+        public static readonly Color Background = new Color(12f / 255f, 15f / 255f, 22f / 255f, 1f);
+        public static readonly Color Panel = new Color(26f / 255f, 30f / 255f, 40f / 255f, 1f);
+        public static readonly Color PanelElevated = new Color(34f / 255f, 39f / 255f, 52f / 255f, 1f);
+        public static readonly Color Accent = new Color(237f / 255f, 71f / 255f, 60f / 255f, 1f);
+        public static readonly Color AccentSoft = new Color(255f / 255f, 140f / 255f, 92f / 255f, 1f);
+        public static readonly Color TextPrimary = new Color(246f / 255f, 247f / 255f, 251f / 255f, 1f);
+        public static readonly Color TextMuted = new Color(169f / 255f, 176f / 255f, 190f / 255f, 1f);
+        public static readonly Color TextHeading = new Color(255f / 255f, 255f / 255f, 255f / 255f, 1f);
+        public static readonly Color Border = new Color(58f / 255f, 65f / 255f, 82f / 255f, 1f);
+        public static readonly Color Shadow = new Color(0f, 0f, 0f, 0.45f);
 
         public static Font PrimaryFont { get; private set; }
+        public static Font HeadingFont { get; private set; }
         public static Sprite RoundedSquare { get; private set; }
         public static bool Initialized { get; private set; }
 
@@ -28,9 +34,14 @@ namespace UFC.UI.Theme
             }
 
             PrimaryFont = Resources.Load<Font>("Fonts/UfcPrimary");
+            HeadingFont = Resources.Load<Font>("Fonts/UfcHeading");
             if (PrimaryFont == null)
             {
                 PrimaryFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+            if (HeadingFont == null)
+            {
+                HeadingFont = PrimaryFont;
             }
 
             RoundedSquare = Resources.Load<Sprite>("UI/RoundedSquare");
@@ -79,6 +90,7 @@ namespace UFC.UI.Theme
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.alignment = TextAnchor.MiddleLeft;
+            text.lineSpacing = 1.1f;
             text.raycastTarget = false;
 
             return textObject;
@@ -121,6 +133,11 @@ namespace UFC.UI.Theme
 
         public static void ApplyCardVisual(GameObject card, float preferredHeight)
         {
+            StyleCardSurface(card, preferredHeight, addAccent: true, applyLayout: true);
+        }
+
+        public static void StyleCardSurface(GameObject card, float preferredHeight, bool addAccent, bool applyLayout)
+        {
             if (card == null)
             {
                 return;
@@ -137,19 +154,30 @@ namespace UFC.UI.Theme
                 image = card.AddComponent<Image>();
             }
 
-            image.color = Panel;
+            image.color = PanelElevated;
             image.sprite = RoundedSquare;
             image.type = RoundedSquare != null ? Image.Type.Sliced : Image.Type.Simple;
 
-            var layoutElement = card.GetComponent<LayoutElement>();
-            if (layoutElement == null)
+            ApplyShadow(card, Shadow, new Vector2(0f, -4f));
+            ApplyOutline(card, Border, new Vector2(1f, -1f));
+
+            if (addAccent)
             {
-                layoutElement = card.AddComponent<LayoutElement>();
+                EnsureAccentStrip(card, Accent);
             }
 
-            layoutElement.minHeight = preferredHeight;
-            layoutElement.preferredHeight = preferredHeight;
-            layoutElement.flexibleHeight = 0f;
+            if (applyLayout && preferredHeight > 0f)
+            {
+                var layoutElement = card.GetComponent<LayoutElement>();
+                if (layoutElement == null)
+                {
+                    layoutElement = card.AddComponent<LayoutElement>();
+                }
+
+                layoutElement.minHeight = preferredHeight;
+                layoutElement.preferredHeight = preferredHeight;
+                layoutElement.flexibleHeight = 0f;
+            }
         }
 
         public static void ApplyTextStyle(Text text, bool isMuted, bool isHeading)
@@ -161,12 +189,98 @@ namespace UFC.UI.Theme
 
             Initialize();
 
-            text.font = PrimaryFont;
-            text.color = isMuted ? TextMuted : TextPrimary;
-            if (isHeading)
+            text.font = isHeading ? HeadingFont : PrimaryFont;
+            text.color = isMuted ? TextMuted : (isHeading ? TextHeading : TextPrimary);
+            text.fontStyle = isHeading ? FontStyle.Bold : text.fontStyle;
+        }
+
+        public static void ApplyTabButtonStyle(Button button, bool isActive)
+        {
+            if (button == null)
             {
-                text.fontStyle = FontStyle.Bold;
+                return;
             }
+
+            var image = button.targetGraphic as Image;
+            if (image != null)
+            {
+                image.sprite = RoundedSquare;
+                image.type = RoundedSquare != null ? Image.Type.Sliced : Image.Type.Simple;
+                image.color = isActive ? Accent : Panel;
+            }
+
+            var colors = button.colors;
+            colors.normalColor = isActive ? Accent : Panel;
+            colors.highlightedColor = isActive ? AccentSoft : PanelElevated;
+            colors.pressedColor = isActive ? AccentSoft : Panel;
+            colors.selectedColor = colors.normalColor;
+            colors.disabledColor = new Color(colors.normalColor.r, colors.normalColor.g, colors.normalColor.b, 0.5f);
+            colors.colorMultiplier = 1f;
+            colors.fadeDuration = 0.1f;
+            button.colors = colors;
+
+            var label = button.GetComponentInChildren<Text>(true);
+            if (label != null)
+            {
+                label.fontSize = 16;
+                label.alignment = TextAnchor.MiddleCenter;
+                label.fontStyle = FontStyle.Bold;
+                ApplyTextStyle(label, isMuted: !isActive, isHeading: true);
+                label.color = isActive ? TextHeading : TextMuted;
+            }
+        }
+
+        public static void ApplyPrimaryButtonStyle(Button button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            var image = button.targetGraphic as Image;
+            if (image != null)
+            {
+                image.sprite = RoundedSquare;
+                image.type = RoundedSquare != null ? Image.Type.Sliced : Image.Type.Simple;
+                image.color = Accent;
+            }
+
+            var colors = button.colors;
+            colors.normalColor = Accent;
+            colors.highlightedColor = AccentSoft;
+            colors.pressedColor = new Color(Accent.r * 0.9f, Accent.g * 0.9f, Accent.b * 0.9f, 1f);
+            colors.selectedColor = Accent;
+            colors.disabledColor = new Color(Accent.r, Accent.g, Accent.b, 0.5f);
+            colors.colorMultiplier = 1f;
+            colors.fadeDuration = 0.1f;
+            button.colors = colors;
+
+            var label = button.GetComponentInChildren<Text>(true);
+            if (label != null)
+            {
+                label.fontSize = 16;
+                label.alignment = TextAnchor.MiddleCenter;
+                ApplyTextStyle(label, isMuted: false, isHeading: true);
+                label.color = TextHeading;
+            }
+        }
+
+        public static void ApplyCardButtonStyle(Button button)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            var colors = button.colors;
+            colors.normalColor = PanelElevated;
+            colors.highlightedColor = new Color(48f / 255f, 55f / 255f, 72f / 255f, 1f);
+            colors.pressedColor = new Color(26f / 255f, 30f / 255f, 40f / 255f, 1f);
+            colors.selectedColor = colors.normalColor;
+            colors.disabledColor = new Color(PanelElevated.r, PanelElevated.g, PanelElevated.b, 0.5f);
+            colors.colorMultiplier = 1f;
+            colors.fadeDuration = 0.1f;
+            button.colors = colors;
         }
 
         public static void EnsureListLayout(Transform listRoot)
@@ -190,8 +304,8 @@ namespace UFC.UI.Theme
                 layout = listRoot.gameObject.AddComponent<VerticalLayoutGroup>();
             }
 
-            layout.spacing = 12f;
-            layout.padding = new RectOffset(12, 12, 12, 12);
+            layout.spacing = 16f;
+            layout.padding = new RectOffset(20, 20, 20, 20);
             layout.childAlignment = TextAnchor.UpperLeft;
             layout.childControlHeight = true;
             layout.childControlWidth = true;
@@ -232,6 +346,56 @@ namespace UFC.UI.Theme
                 {
                     ApplyLayerRecursive(child.gameObject, layer);
                 }
+            }
+        }
+
+        private static void ApplyShadow(GameObject target, Color color, Vector2 distance)
+        {
+            var shadow = target.GetComponent<Shadow>();
+            if (shadow == null)
+            {
+                shadow = target.AddComponent<Shadow>();
+            }
+            shadow.effectColor = color;
+            shadow.effectDistance = distance;
+        }
+
+        private static void ApplyOutline(GameObject target, Color color, Vector2 distance)
+        {
+            var outline = target.GetComponent<Outline>();
+            if (outline == null)
+            {
+                outline = target.AddComponent<Outline>();
+            }
+            outline.effectColor = color;
+            outline.effectDistance = distance;
+        }
+
+        private static void EnsureAccentStrip(GameObject target, Color color)
+        {
+            var accentTransform = target.transform.Find("AccentStrip");
+            if (accentTransform == null)
+            {
+                var accent = new GameObject("AccentStrip", typeof(RectTransform), typeof(Image));
+                accent.transform.SetParent(target.transform, false);
+                ApplyLayerFromParent(accent, target.transform);
+                accentTransform = accent.transform;
+
+                var rect = accentTransform as RectTransform;
+                if (rect != null)
+                {
+                    rect.anchorMin = new Vector2(0f, 0f);
+                    rect.anchorMax = new Vector2(0f, 1f);
+                    rect.pivot = new Vector2(0f, 0.5f);
+                    rect.sizeDelta = new Vector2(4f, 0f);
+                    rect.anchoredPosition = Vector2.zero;
+                }
+            }
+
+            var image = accentTransform.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = color;
             }
         }
     }

@@ -8,9 +8,26 @@ using UnityEngine.UI;
 
 namespace UFC.UI.Screens
 {
+    [ExecuteAlways]
     public class RankingScreen : MonoBehaviour
     {
         public Transform ListRoot;
+
+        private void OnEnable()
+        {
+            if (!Application.isPlaying)
+            {
+                RenderPreview();
+            }
+        }
+
+        private void OnValidate()
+        {
+            if (!Application.isPlaying)
+            {
+                RenderPreview();
+            }
+        }
 
         public void Refresh(GameState state)
         {
@@ -49,44 +66,16 @@ namespace UFC.UI.Screens
 
         private void ConfigureListRoot()
         {
-            var rect = ListRoot as RectTransform;
-            if (rect != null)
-            {
-                rect.anchorMin = new Vector2(0f, 1f);
-                rect.anchorMax = new Vector2(1f, 1f);
-                rect.pivot = new Vector2(0.5f, 1f);
-            }
-
-            var layout = ListRoot.GetComponent<VerticalLayoutGroup>();
-            if (layout == null)
-            {
-                layout = ListRoot.gameObject.AddComponent<VerticalLayoutGroup>();
-            }
-
-            layout.spacing = 10f;
-            layout.padding = new RectOffset(20, 20, 20, 20);
-            layout.childAlignment = TextAnchor.UpperLeft;
-            layout.childControlHeight = true;
-            layout.childControlWidth = true;
-            layout.childForceExpandHeight = false;
-            layout.childForceExpandWidth = true;
-
-            var fitter = ListRoot.GetComponent<ContentSizeFitter>();
-            if (fitter == null)
-            {
-                fitter = ListRoot.gameObject.AddComponent<ContentSizeFitter>();
-            }
-
-            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            UiTheme.EnsureListLayout(ListRoot);
         }
 
         private void AddHeader(string title)
         {
-            var headerObject = UiTheme.CreateText(ListRoot, title, 16, UiTheme.TextMuted, true);
+            var headerObject = UiTheme.CreateText(ListRoot, title, 18, UiTheme.TextMuted, true);
             headerObject.name = $"{title}_Header";
             var headerText = headerObject.GetComponent<Text>();
             headerText.alignment = TextAnchor.MiddleLeft;
+            UiTheme.ApplyTextStyle(headerText, true, true);
         }
 
         private void AddEntry(Fighter fighter, string rank)
@@ -107,7 +96,66 @@ namespace UFC.UI.Screens
         {
             for (int i = ListRoot.childCount - 1; i >= 0; i--)
             {
-                Destroy(ListRoot.GetChild(i).gameObject);
+                DestroyItem(ListRoot.GetChild(i).gameObject);
+            }
+        }
+
+        private void RenderPreview()
+        {
+            UiTheme.Initialize();
+
+            if (ListRoot == null)
+            {
+                return;
+            }
+
+            ConfigureListRoot();
+            ClearList();
+
+            AddHeader("LIGHTWEIGHT");
+            AddEntry(PreviewFighter("C", "Islam Makhachev", 32, 25, 1, 0, 1985f), "C");
+            AddEntry(PreviewFighter("#1", "Charles Oliveira", 34, 34, 10, 0, 1892f), "#1");
+            AddEntry(PreviewFighter("#2", "Dustin Poirier", 35, 30, 8, 0, 1870f), "#2");
+
+            AddHeader("MIDDLEWEIGHT");
+            AddEntry(PreviewFighter("C", "Dricus Du Plessis", 30, 22, 2, 0, 1934f), "C");
+            AddEntry(PreviewFighter("#1", "Israel Adesanya", 34, 24, 3, 0, 1902f), "#1");
+            AddEntry(PreviewFighter("#2", "Robert Whittaker", 33, 26, 7, 0, 1858f), "#2");
+
+            AddHeader("HEAVYWEIGHT");
+            AddEntry(PreviewFighter("C", "Jon Jones", 36, 27, 1, 0, 2012f), "C");
+            AddEntry(PreviewFighter("#1", "Ciryl Gane", 33, 12, 2, 0, 1887f), "#1");
+            AddEntry(PreviewFighter("#2", "Tom Aspinall", 31, 13, 3, 0, 1860f), "#2");
+        }
+
+        private static Fighter PreviewFighter(string rank, string name, int age, int wins, int losses, int draws, float rating)
+        {
+            return new Fighter
+            {
+                Name = name,
+                Age = age,
+                Wins = wins,
+                Losses = losses,
+                Draws = draws,
+                Rating = rating,
+                IsChamp = rank == "C" ? 1 : 0
+            };
+        }
+
+        private static void DestroyItem(GameObject item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(item);
+            }
+            else
+            {
+                DestroyImmediate(item);
             }
         }
     }

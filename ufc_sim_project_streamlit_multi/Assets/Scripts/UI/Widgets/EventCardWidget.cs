@@ -14,20 +14,23 @@ namespace UFC.UI.Widgets
         public void Bind(string title, string subtitle, Action onClick = null)
         {
             UiTheme.EnsureInitialized(this);
-            UiTheme.ApplyCardVisual(gameObject, 84f);
+            UiTheme.ApplyCardVisual(gameObject, 92f);
 
             if (Title != null)
             {
                 Title.text = title ?? string.Empty;
+                Title.fontSize = 20;
                 UiTheme.ApplyTextStyle(Title, false, true);
             }
             if (Subtitle != null)
             {
                 Subtitle.text = subtitle ?? string.Empty;
+                Subtitle.fontSize = 14;
                 UiTheme.ApplyTextStyle(Subtitle, true, false);
             }
             if (Button != null)
             {
+                UiTheme.ApplyCardButtonStyle(Button);
                 Button.onClick.RemoveAllListeners();
                 if (onClick != null)
                 {

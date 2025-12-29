@@ -9,6 +9,7 @@ using UFC.UI.Theme;
 
 namespace UFC.UI.Screens
 {
+    [ExecuteAlways]
     public class EventsScreen : MonoBehaviour
     {
         public Transform EventsListRoot;
@@ -17,6 +18,22 @@ namespace UFC.UI.Screens
         public FightCardWidget FightCardPrefab;
 
         private GameState _state;
+
+        private void OnEnable()
+        {
+            if (!Application.isPlaying)
+            {
+                RenderPreview();
+            }
+        }
+
+        private void OnValidate()
+        {
+            if (!Application.isPlaying)
+            {
+                RenderPreview();
+            }
+        }
 
         public void Refresh(GameState state)
         {
@@ -102,7 +119,80 @@ namespace UFC.UI.Screens
             }
             for (int i = root.childCount - 1; i >= 0; i--)
             {
-                Destroy(root.GetChild(i).gameObject);
+                DestroyItem(root.GetChild(i).gameObject);
+            }
+        }
+
+        private void RenderPreview()
+        {
+            UiTheme.EnsureInitialized(this);
+            UiTheme.EnsureListLayout(EventsListRoot);
+            UiTheme.EnsureListLayout(FightListRoot);
+
+            if (EventsListRoot == null || FightListRoot == null || EventCardPrefab == null || FightCardPrefab == null)
+            {
+                return;
+            }
+
+            ClearList(EventsListRoot);
+            ClearList(FightListRoot);
+
+            var previewEvents = new[]
+            {
+                new { Title = "12 Aug · UFC Fight Night", Subtitle = "Las Vegas, USA" },
+                new { Title = "26 Aug · UFC 300", Subtitle = "New York, USA" },
+                new { Title = "09 Sep · UFC International", Subtitle = "Tokyo, Japan" }
+            };
+
+            foreach (var ev in previewEvents)
+            {
+                var card = Instantiate(EventCardPrefab, EventsListRoot);
+                UiTheme.ApplyLayerFromParent(card.gameObject, EventsListRoot);
+                card.Bind(ev.Title, ev.Subtitle, () => ShowPreviewFights());
+            }
+
+            ShowPreviewFights();
+        }
+
+        private void ShowPreviewFights()
+        {
+            if (FightListRoot == null || FightCardPrefab == null)
+            {
+                return;
+            }
+
+            ClearList(FightListRoot);
+
+            var previewFights = new[]
+            {
+                new { Title = "Volkanovski vs Topuria", Subtitle = "Featherweight · Title Fight" },
+                new { Title = "O'Malley vs Vera", Subtitle = "Bantamweight · Title Fight" },
+                new { Title = "Pereira vs Hill", Subtitle = "Light Heavyweight" },
+                new { Title = "Shevchenko vs Grasso", Subtitle = "Women's Flyweight" }
+            };
+
+            foreach (var fight in previewFights)
+            {
+                var card = Instantiate(FightCardPrefab, FightListRoot);
+                UiTheme.ApplyLayerFromParent(card.gameObject, FightListRoot);
+                card.Bind(fight.Title, fight.Subtitle);
+            }
+        }
+
+        private static void DestroyItem(GameObject item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(item);
+            }
+            else
+            {
+                DestroyImmediate(item);
             }
         }
     }
