@@ -5,6 +5,7 @@ using UFC.UI.Theme;
 using UFC.UI.Widgets;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Serialization;
 
 namespace UFC.UI.Screens
 {
@@ -12,6 +13,8 @@ namespace UFC.UI.Screens
     public class RankingScreen : MonoBehaviour
     {
         public Transform ListRoot;
+        [FormerlySerializedAs("EntryPrefab")]
+        public RankingEntryWidget RankingEntryPrefab;
 
         private void OnEnable()
         {
@@ -80,10 +83,25 @@ namespace UFC.UI.Screens
 
         private void AddEntry(Fighter fighter, string rank)
         {
-            var entryObject = new GameObject("RankingEntry", typeof(RectTransform));
-            entryObject.transform.SetParent(ListRoot, false);
-            UiTheme.ApplyLayerFromParent(entryObject, ListRoot);
-            var widget = entryObject.AddComponent<RankingEntryWidget>();
+            if (ListRoot == null)
+            {
+                return;
+            }
+
+            RankingEntryWidget widget;
+            if (RankingEntryPrefab != null)
+            {
+                widget = Instantiate(RankingEntryPrefab, ListRoot);
+                UiTheme.ApplyLayerFromParent(widget.gameObject, ListRoot);
+            }
+            else
+            {
+                var entryObject = new GameObject("RankingEntry", typeof(RectTransform));
+                entryObject.transform.SetParent(ListRoot, false);
+                UiTheme.ApplyLayerFromParent(entryObject, ListRoot);
+                widget = entryObject.AddComponent<RankingEntryWidget>();
+            }
+
             widget.Bind(fighter, rank);
         }
 

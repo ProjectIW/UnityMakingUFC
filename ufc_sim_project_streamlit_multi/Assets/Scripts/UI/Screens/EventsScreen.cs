@@ -51,12 +51,25 @@ namespace UFC.UI.Screens
             ClearList(FightListRoot);
 
             var today = DateUtil.ParseDateOrDefault(_state.Save.CurrentDate, new DateTime(2026, 1, 1));
-            var upcoming = _state.Events
+            var datedEvents = _state.Events
                 .Select(e => new { Event = e, EventDate = DateUtil.ParseDate(e.EventDate) })
-                .Where(e => e.Event.Completed == 0 && e.EventDate.HasValue && e.EventDate.Value >= today)
+                .Where(e => e.EventDate.HasValue)
+                .ToList();
+
+            var upcoming = datedEvents
+                .Where(e => e.Event.Completed == 0 && e.EventDate.Value >= today)
                 .OrderBy(e => e.EventDate.Value)
                 .Select(e => e.Event)
                 .ToList();
+
+            if (upcoming.Count == 0)
+            {
+                upcoming = datedEvents
+                    .Where(e => e.Event.Completed == 0)
+                    .OrderBy(e => e.EventDate.Value)
+                    .Select(e => e.Event)
+                    .ToList();
+            }
 
             foreach (var ev in upcoming)
             {

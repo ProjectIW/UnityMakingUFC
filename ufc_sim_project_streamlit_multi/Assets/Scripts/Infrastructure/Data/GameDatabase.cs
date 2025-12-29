@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -52,8 +53,8 @@ namespace UFC.Infrastructure.Data
             foreach (var div in ListDivisions())
             {
                 string divDir = Path.Combine(_dataRoot, div);
-                string fightersPath = Path.Combine(divDir, "fighters.csv");
-                string pairsPath = Path.Combine(divDir, "pair_history.csv");
+                string fightersPath = ResolveCsvPath(divDir, "fighters.csv");
+                string pairsPath = ResolveCsvPath(divDir, "pair_history.csv");
                 var fighterRows = CsvUtil.ReadCsvDicts(fightersPath);
                 fightersByDiv[div] = fighterRows.ConvertAll(Fighter.FromDict);
                 pairsByDiv[div] = CsvUtil.ReadCsvDicts(pairsPath);
@@ -108,6 +109,20 @@ namespace UFC.Infrastructure.Data
                 .ToList();
 
             return dirs.Count > 0 ? dirs : new List<string> { "Flyweight" };
+        }
+
+        private static string ResolveCsvPath(string directory, string fileName)
+        {
+            var preferred = Path.Combine(directory, fileName);
+            if (File.Exists(preferred) || !Directory.Exists(directory))
+            {
+                return preferred;
+            }
+
+            var match = Directory.EnumerateFiles(directory)
+                .FirstOrDefault(file => string.Equals(Path.GetFileName(file), fileName, StringComparison.OrdinalIgnoreCase));
+
+            return match ?? preferred;
         }
     }
 
