@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace UFC.Infrastructure.Save
@@ -20,6 +21,26 @@ namespace UFC.Infrastructure.Save
         public static bool SlotExists(int slotId)
         {
             return File.Exists(Path.Combine(SlotDataPath(slotId), "_global", "save_game.csv"));
+        }
+
+        public static void EnsureSlotData(int slotId)
+        {
+            string slot = SlotPath(slotId);
+            string dataPath = SlotDataPath(slotId);
+            string savePath = Path.Combine(dataPath, "_global", "save_game.csv");
+
+            if (Directory.Exists(dataPath) && File.Exists(savePath))
+            {
+                return;
+            }
+
+            if (Directory.Exists(dataPath) && Directory.EnumerateFileSystemEntries(dataPath).Any())
+            {
+                return;
+            }
+
+            Directory.CreateDirectory(slot);
+            CopyDirectory(Application.streamingAssetsPath + "/BaseData", dataPath);
         }
 
         public static void CreateSlot(int slotId, bool overwrite = false)

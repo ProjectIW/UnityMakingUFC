@@ -75,10 +75,12 @@ namespace UFC.Infrastructure
 
         private void EnsureSaveSlot()
         {
-            if (!SaveSlotsService.SlotExists(SaveSlot))
+            if (!string.IsNullOrWhiteSpace(DataRootOverride))
             {
-                SaveSlotsService.CreateSlot(SaveSlot, overwrite: false);
+                return;
             }
+
+            SaveSlotsService.EnsureSlotData(SaveSlot);
         }
 
         private int? TryParseSeed()
