@@ -49,44 +49,16 @@ namespace UFC.UI.Screens
 
         private void ConfigureListRoot()
         {
-            var rect = ListRoot as RectTransform;
-            if (rect != null)
-            {
-                rect.anchorMin = new Vector2(0f, 1f);
-                rect.anchorMax = new Vector2(1f, 1f);
-                rect.pivot = new Vector2(0.5f, 1f);
-            }
-
-            var layout = ListRoot.GetComponent<VerticalLayoutGroup>();
-            if (layout == null)
-            {
-                layout = ListRoot.gameObject.AddComponent<VerticalLayoutGroup>();
-            }
-
-            layout.spacing = 10f;
-            layout.padding = new RectOffset(20, 20, 20, 20);
-            layout.childAlignment = TextAnchor.UpperLeft;
-            layout.childControlHeight = true;
-            layout.childControlWidth = true;
-            layout.childForceExpandHeight = false;
-            layout.childForceExpandWidth = true;
-
-            var fitter = ListRoot.GetComponent<ContentSizeFitter>();
-            if (fitter == null)
-            {
-                fitter = ListRoot.gameObject.AddComponent<ContentSizeFitter>();
-            }
-
-            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            UiTheme.EnsureListLayout(ListRoot);
         }
 
         private void AddHeader(string title)
         {
-            var headerObject = UiTheme.CreateText(ListRoot, title, 16, UiTheme.TextMuted, true);
+            var headerObject = UiTheme.CreateText(ListRoot, title, 18, UiTheme.TextMuted, true);
             headerObject.name = $"{title}_Header";
             var headerText = headerObject.GetComponent<Text>();
             headerText.alignment = TextAnchor.MiddleLeft;
+            UiTheme.ApplyTextStyle(headerText, true, true);
         }
 
         private void AddEntry(Fighter fighter, string rank)
