@@ -46,6 +46,7 @@ namespace UFC.UI.Screens
                 string title = $"{ev.EventDate} · {ev.EventKind}";
                 string subtitle = $"{ev.Location} {ev.ThemeCountry}".Trim();
                 var card = Instantiate(EventCardPrefab, EventsListRoot);
+                UiTheme.ApplyLayerFromParent(card.gameObject, EventsListRoot);
                 var captured = ev;
                 card.Bind(title, subtitle, () => ShowEvent(captured));
             }
@@ -78,6 +79,7 @@ namespace UFC.UI.Screens
                 string title = $"{aName} vs {bName}";
                 string subtitle = fight.IsTitleFight == 1 ? $"{fight.Division} · Title Fight" : fight.Division;
                 var card = Instantiate(FightCardPrefab, FightListRoot);
+                UiTheme.ApplyLayerFromParent(card.gameObject, FightListRoot);
                 card.Bind(title, subtitle);
             }
         }

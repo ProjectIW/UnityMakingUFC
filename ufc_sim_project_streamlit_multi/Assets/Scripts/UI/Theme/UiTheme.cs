@@ -44,6 +44,7 @@ namespace UFC.UI.Theme
 
             var panel = new GameObject("Panel", typeof(RectTransform), typeof(Image));
             panel.transform.SetParent(parent, false);
+            ApplyLayerFromParent(panel, parent);
 
             var image = panel.GetComponent<Image>();
             image.color = color;
@@ -67,6 +68,7 @@ namespace UFC.UI.Theme
 
             var textObject = new GameObject("Text", typeof(RectTransform), typeof(Text));
             textObject.transform.SetParent(parent, false);
+            ApplyLayerFromParent(textObject, parent);
 
             var text = textObject.GetComponent<Text>();
             text.text = content ?? string.Empty;
@@ -86,6 +88,7 @@ namespace UFC.UI.Theme
         {
             var row = new GameObject("Row", typeof(RectTransform), typeof(HorizontalLayoutGroup));
             row.transform.SetParent(parent, false);
+            ApplyLayerFromParent(row, parent);
 
             var layout = row.GetComponent<HorizontalLayoutGroup>();
             layout.padding = padding;
@@ -103,6 +106,7 @@ namespace UFC.UI.Theme
         {
             var column = new GameObject("Column", typeof(RectTransform), typeof(VerticalLayoutGroup));
             column.transform.SetParent(parent, false);
+            ApplyLayerFromParent(column, parent);
 
             var layout = column.GetComponent<VerticalLayoutGroup>();
             layout.spacing = spacing;
@@ -120,6 +124,11 @@ namespace UFC.UI.Theme
             if (card == null)
             {
                 return;
+            }
+
+            if (card.transform.parent != null)
+            {
+                ApplyLayerFromParent(card, card.transform.parent);
             }
 
             var image = card.GetComponent<Image>();
@@ -197,6 +206,33 @@ namespace UFC.UI.Theme
 
             fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        public static void ApplyLayerFromParent(GameObject target, Transform parent)
+        {
+            if (target == null || parent == null)
+            {
+                return;
+            }
+
+            ApplyLayerRecursive(target, parent.gameObject.layer);
+        }
+
+        public static void ApplyLayerRecursive(GameObject target, int layer)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            target.layer = layer;
+            foreach (Transform child in target.transform)
+            {
+                if (child != null)
+                {
+                    ApplyLayerRecursive(child.gameObject, layer);
+                }
+            }
         }
     }
 }

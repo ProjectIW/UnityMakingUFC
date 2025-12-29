@@ -93,6 +93,7 @@ namespace UFC.UI.Screens
         {
             var entryObject = new GameObject("RankingEntry", typeof(RectTransform));
             entryObject.transform.SetParent(ListRoot, false);
+            UiTheme.ApplyLayerFromParent(entryObject, ListRoot);
             var widget = entryObject.AddComponent<RankingEntryWidget>();
             widget.Bind(fighter, rank);
         }
