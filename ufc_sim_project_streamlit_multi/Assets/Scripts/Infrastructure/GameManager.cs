@@ -53,6 +53,7 @@ namespace UFC.Infrastructure
             _database = new GameDatabase(dataRoot);
             _state = _database.LoadState();
             EnsureFighterDataLoaded(dataRoot);
+            EnsureEventDataLoaded(dataRoot);
             int? seed = TryParseSeed();
             _service = new GameService(_database, seed);
 
@@ -227,6 +228,35 @@ namespace UFC.Infrastructure
             _state = fallbackState;
         }
 
+        private void EnsureEventDataLoaded(string dataRoot)
+        {
+            if (HasEventData(_state) && HasFightData(_state))
+            {
+                return;
+            }
+
+            var streamingRoot = Path.Combine(Application.streamingAssetsPath, "BaseData");
+            if (string.IsNullOrWhiteSpace(streamingRoot) || !Directory.Exists(streamingRoot))
+            {
+                return;
+            }
+
+            if (string.Equals(dataRoot, streamingRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var fallbackDatabase = new GameDatabase(streamingRoot);
+            var fallbackState = fallbackDatabase.LoadState();
+            if (!HasEventData(fallbackState) && !HasFightData(fallbackState))
+            {
+                return;
+            }
+
+            _database = fallbackDatabase;
+            _state = fallbackState;
+        }
+
         private static bool HasFighterData(GameState state)
         {
             if (state?.FightersByDivision == null)
@@ -243,6 +273,16 @@ namespace UFC.Infrastructure
             }
 
             return false;
+        }
+
+        private static bool HasEventData(GameState state)
+        {
+            return state?.Events != null && state.Events.Count > 0;
+        }
+
+        private static bool HasFightData(GameState state)
+        {
+            return state?.Fights != null && state.Fights.Count > 0;
         }
     }
 }
