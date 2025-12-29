@@ -5,16 +5,19 @@ namespace UFC.UI.Theme
 {
     public static class UiTheme
     {
-        public static readonly Color Background = new Color(12f / 255f, 15f / 255f, 22f / 255f, 1f);
-        public static readonly Color Panel = new Color(26f / 255f, 30f / 255f, 40f / 255f, 1f);
-        public static readonly Color PanelElevated = new Color(34f / 255f, 39f / 255f, 52f / 255f, 1f);
-        public static readonly Color Accent = new Color(237f / 255f, 71f / 255f, 60f / 255f, 1f);
-        public static readonly Color AccentSoft = new Color(255f / 255f, 140f / 255f, 92f / 255f, 1f);
-        public static readonly Color TextPrimary = new Color(246f / 255f, 247f / 255f, 251f / 255f, 1f);
-        public static readonly Color TextMuted = new Color(169f / 255f, 176f / 255f, 190f / 255f, 1f);
+        public static readonly Color Background = new Color(7f / 255f, 10f / 255f, 18f / 255f, 1f);
+        public static readonly Color Panel = new Color(15f / 255f, 20f / 255f, 32f / 255f, 1f);
+        public static readonly Color PanelElevated = new Color(22f / 255f, 30f / 255f, 46f / 255f, 1f);
+        public static readonly Color Accent = new Color(74f / 255f, 200f / 255f, 255f / 255f, 1f);
+        public static readonly Color AccentSoft = new Color(124f / 255f, 226f / 255f, 255f / 255f, 1f);
+        public static readonly Color TextPrimary = new Color(239f / 255f, 244f / 255f, 255f / 255f, 1f);
+        public static readonly Color TextMuted = new Color(142f / 255f, 157f / 255f, 181f / 255f, 1f);
         public static readonly Color TextHeading = new Color(255f / 255f, 255f / 255f, 255f / 255f, 1f);
-        public static readonly Color Border = new Color(58f / 255f, 65f / 255f, 82f / 255f, 1f);
-        public static readonly Color Shadow = new Color(0f, 0f, 0f, 0.45f);
+        public static readonly Color Border = new Color(42f / 255f, 54f / 255f, 75f / 255f, 1f);
+        public static readonly Color Shadow = new Color(0f, 0f, 0f, 0.6f);
+        public static readonly Color RatingHigh = new Color(255f / 255f, 209f / 255f, 102f / 255f, 1f);
+        public static readonly Color RatingMid = new Color(110f / 255f, 219f / 255f, 164f / 255f, 1f);
+        public static readonly Color RatingLow = new Color(128f / 255f, 149f / 255f, 190f / 255f, 1f);
 
         public static Font PrimaryFont { get; private set; }
         public static Font HeadingFont { get; private set; }
@@ -160,8 +163,8 @@ namespace UFC.UI.Theme
             image.sprite = RoundedSquare;
             image.type = RoundedSquare != null ? Image.Type.Sliced : Image.Type.Simple;
 
-            ApplyShadow(card, Shadow, new Vector2(0f, -4f));
-            ApplyOutline(card, Border, new Vector2(1f, -1f));
+            ApplyShadow(card, Shadow, new Vector2(0f, -6f));
+            ApplyOutline(card, new Color(Border.r, Border.g, Border.b, 0.6f), new Vector2(1f, -1f));
 
             if (addAccent)
             {
@@ -224,11 +227,11 @@ namespace UFC.UI.Theme
             var label = button.GetComponentInChildren<Text>(true);
             if (label != null)
             {
-                label.fontSize = 16;
+                label.fontSize = 15;
                 label.alignment = TextAnchor.MiddleCenter;
                 label.fontStyle = FontStyle.Bold;
                 ApplyTextStyle(label, isMuted: !isActive, isHeading: true);
-                label.color = isActive ? TextHeading : TextMuted;
+                label.color = isActive ? Background : TextMuted;
             }
         }
 
@@ -263,7 +266,7 @@ namespace UFC.UI.Theme
                 label.fontSize = 16;
                 label.alignment = TextAnchor.MiddleCenter;
                 ApplyTextStyle(label, isMuted: false, isHeading: true);
-                label.color = TextHeading;
+                label.color = Background;
             }
         }
 
@@ -307,7 +310,7 @@ namespace UFC.UI.Theme
             }
 
             layout.spacing = 16f;
-            layout.padding = new RectOffset(20, 20, 20, 20);
+            layout.padding = new RectOffset(24, 24, 24, 24);
             layout.childAlignment = TextAnchor.UpperLeft;
             layout.childControlHeight = true;
             layout.childControlWidth = true;
@@ -386,10 +389,10 @@ namespace UFC.UI.Theme
                 var rect = accentTransform as RectTransform;
                 if (rect != null)
                 {
-                    rect.anchorMin = new Vector2(0f, 0f);
-                    rect.anchorMax = new Vector2(0f, 1f);
-                    rect.pivot = new Vector2(0f, 0.5f);
-                    rect.sizeDelta = new Vector2(4f, 0f);
+                    rect.anchorMin = new Vector2(0f, 1f);
+                    rect.anchorMax = new Vector2(1f, 1f);
+                    rect.pivot = new Vector2(0.5f, 1f);
+                    rect.sizeDelta = new Vector2(0f, 4f);
                     rect.anchoredPosition = Vector2.zero;
                 }
             }
@@ -409,6 +412,19 @@ namespace UFC.UI.Theme
             }
 
             return font.HasCharacter('A') && font.HasCharacter('0') && font.HasCharacter('А');
+        }
+
+        public static Color GetRatingColor(float rating)
+        {
+            if (rating >= 2000f)
+            {
+                return RatingHigh;
+            }
+            if (rating >= 1750f)
+            {
+                return RatingMid;
+            }
+            return RatingLow;
         }
     }
 }
