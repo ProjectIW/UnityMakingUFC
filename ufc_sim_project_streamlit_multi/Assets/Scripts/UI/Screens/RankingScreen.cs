@@ -1,41 +1,38 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using UFC.Core.Models;
 using UFC.Infrastructure.Data;
-using UnityEngine;
-using UFC.UI.Widgets;
 using UFC.UI.Theme;
+using UFC.UI.Widgets;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace UFC.UI.Screens
 {
     public class RankingScreen : MonoBehaviour
     {
         public Transform ListRoot;
-        public RankingEntryWidget EntryPrefab;
 
         public void Refresh(GameState state)
         {
-            UiTheme.EnsureInitialized(this);
-            UiTheme.EnsureListLayout(ListRoot);
+            UiTheme.Initialize();
 
-            if (state == null || ListRoot == null || EntryPrefab == null)
+            if (state == null || ListRoot == null)
             {
                 return;
             }
 
+            ConfigureListRoot();
             ClearList();
 
             foreach (var division in state.FightersByDivision.Keys.OrderBy(d => d))
             {
-                AddEntry(division.ToUpperInvariant(), string.Empty);
+                AddHeader(division.ToUpperInvariant());
 
                 var fighters = state.FightersByDivision[division];
                 var champ = fighters.FirstOrDefault(f => f.IsChamp == 1);
                 if (champ != null)
                 {
-                    AddEntry($"C. {champ.Name}", FormatRecord(champ));
+                    AddEntry(champ, "C");
                 }
 
                 var ranked = fighters
@@ -45,20 +42,59 @@ namespace UFC.UI.Screens
 
                 foreach (var fighter in ranked)
                 {
-                    AddEntry($"#{fighter.RankSlot} {fighter.Name}", FormatRecord(fighter));
+                    AddEntry(fighter, $"#{fighter.RankSlot}");
                 }
             }
         }
 
-        private void AddEntry(string title, string subtitle)
+        private void ConfigureListRoot()
         {
-            var entry = Instantiate(EntryPrefab, ListRoot);
-            entry.Bind(title, subtitle);
+            var rect = ListRoot as RectTransform;
+            if (rect != null)
+            {
+                rect.anchorMin = new Vector2(0f, 1f);
+                rect.anchorMax = new Vector2(1f, 1f);
+                rect.pivot = new Vector2(0.5f, 1f);
+            }
+
+            var layout = ListRoot.GetComponent<VerticalLayoutGroup>();
+            if (layout == null)
+            {
+                layout = ListRoot.gameObject.AddComponent<VerticalLayoutGroup>();
+            }
+
+            layout.spacing = 10f;
+            layout.padding = new RectOffset(20, 20, 20, 20);
+            layout.childAlignment = TextAnchor.UpperLeft;
+            layout.childControlHeight = true;
+            layout.childControlWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.childForceExpandWidth = true;
+
+            var fitter = ListRoot.GetComponent<ContentSizeFitter>();
+            if (fitter == null)
+            {
+                fitter = ListRoot.gameObject.AddComponent<ContentSizeFitter>();
+            }
+
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
-        private static string FormatRecord(Fighter fighter)
+        private void AddHeader(string title)
         {
-            return $"{fighter.Wins}-{fighter.Losses}-{fighter.Draws} · {fighter.Rating.ToString("F1", CultureInfo.InvariantCulture)}";
+            var headerObject = UiTheme.CreateText(ListRoot, title, 16, UiTheme.TextMuted, true);
+            headerObject.name = $"{title}_Header";
+            var headerText = headerObject.GetComponent<Text>();
+            headerText.alignment = TextAnchor.MiddleLeft;
+        }
+
+        private void AddEntry(Fighter fighter, string rank)
+        {
+            var entryObject = new GameObject("RankingEntry", typeof(RectTransform));
+            entryObject.transform.SetParent(ListRoot, false);
+            var widget = entryObject.AddComponent<RankingEntryWidget>();
+            widget.Bind(fighter, rank);
         }
 
         private static int SafeRank(string rankSlot)

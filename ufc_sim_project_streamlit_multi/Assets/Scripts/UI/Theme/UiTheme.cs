@@ -5,32 +5,22 @@ namespace UFC.UI.Theme
 {
     public static class UiTheme
     {
-        public static readonly Color Background = new Color(0.05f, 0.05f, 0.07f, 1f);
-        public static readonly Color Panel = new Color(0.12f, 0.12f, 0.15f, 0.95f);
-        public static readonly Color PanelAlt = new Color(0.14f, 0.14f, 0.18f, 0.95f);
-        public static readonly Color Accent = new Color(0.86f, 0.24f, 0.24f, 1f);
-        public static readonly Color TextPrimary = new Color(0.95f, 0.95f, 0.96f, 1f);
-        public static readonly Color TextMuted = new Color(0.67f, 0.69f, 0.72f, 1f);
+        public static readonly Color Background = new Color(14f / 255f, 17f / 255f, 23f / 255f, 1f);
+        public static readonly Color Panel = new Color(38f / 255f, 39f / 255f, 48f / 255f, 1f);
+        public static readonly Color Accent = new Color(1f, 75f / 255f, 75f / 255f, 1f);
+        public static readonly Color TextPrimary = new Color(250f / 255f, 250f / 255f, 250f / 255f, 1f);
+        public static readonly Color TextMuted = new Color(160f / 255f, 164f / 255f, 175f / 255f, 1f);
 
         public static Font PrimaryFont { get; private set; }
-        public static Font HeadingFont { get; private set; }
+        public static Sprite RoundedSquare { get; private set; }
         public static bool Initialized { get; private set; }
 
         public static void EnsureInitialized(Component context)
         {
-            var canvas = context != null ? context.GetComponentInParent<Canvas>() : Object.FindObjectOfType<Canvas>();
-            if (!Initialized)
-            {
-                Initialize(canvas);
-            }
-
-            if (canvas != null)
-            {
-                ApplyGlobal(canvas);
-            }
+            Initialize();
         }
 
-        public static void Initialize(Canvas canvas)
+        public static void Initialize()
         {
             if (Initialized)
             {
@@ -38,56 +28,91 @@ namespace UFC.UI.Theme
             }
 
             PrimaryFont = Resources.Load<Font>("Fonts/UfcPrimary");
-            HeadingFont = Resources.Load<Font>("Fonts/UfcHeading");
-
             if (PrimaryFont == null)
             {
                 PrimaryFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
             }
 
-            if (HeadingFont == null)
-            {
-                HeadingFont = PrimaryFont;
-            }
-
-            if (canvas != null)
-            {
-                ApplyGlobal(canvas);
-            }
+            RoundedSquare = Resources.Load<Sprite>("UI/RoundedSquare");
 
             Initialized = true;
         }
 
-        public static void ApplyGlobal(Canvas canvas)
+        public static GameObject CreatePanel(Transform parent, Color color, float height)
         {
-            if (canvas == null)
+            Initialize();
+
+            var panel = new GameObject("Panel", typeof(RectTransform), typeof(Image));
+            panel.transform.SetParent(parent, false);
+
+            var image = panel.GetComponent<Image>();
+            image.color = color;
+            image.sprite = RoundedSquare;
+            image.type = RoundedSquare != null ? Image.Type.Sliced : Image.Type.Simple;
+
+            if (height > 0f)
             {
-                return;
+                var layoutElement = panel.AddComponent<LayoutElement>();
+                layoutElement.minHeight = height;
+                layoutElement.preferredHeight = height;
+                layoutElement.flexibleHeight = 0f;
             }
 
-            var root = canvas.transform;
+            return panel;
+        }
 
-            var background = FindByName(root, "Background");
-            if (background != null)
-            {
-                var image = background.GetComponent<Image>();
-                if (image != null)
-                {
-                    image.color = Background;
-                }
-            }
+        public static GameObject CreateText(Transform parent, string content, int fontSize, Color color, bool isBold)
+        {
+            Initialize();
 
-            ApplyPanelColor(root, "RankingTab");
-            ApplyPanelColor(root, "EventsTab");
-            ApplyPanelColor(root, "PastEventsTab");
+            var textObject = new GameObject("Text", typeof(RectTransform), typeof(Text));
+            textObject.transform.SetParent(parent, false);
 
-            ApplyTextStyles(root);
-            ApplyButtonStyles(root);
+            var text = textObject.GetComponent<Text>();
+            text.text = content ?? string.Empty;
+            text.font = PrimaryFont;
+            text.fontSize = fontSize;
+            text.color = color;
+            text.fontStyle = isBold ? FontStyle.Bold : FontStyle.Normal;
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.alignment = TextAnchor.MiddleLeft;
+            text.raycastTarget = false;
 
-            EnsureListLayout(FindByName(root, "ListRoot"));
-            EnsureListLayout(FindByName(root, "EventsListRoot"));
-            EnsureListLayout(FindByName(root, "FightListRoot"));
-            EnsureListLayout(FindByName(root, "ResultsListRoot"));
+            return textObject;
+        }
+
+        public static GameObject CreateRow(Transform parent, RectOffset padding, float spacing)
+        {
+            var row = new GameObject("Row", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            row.transform.SetParent(parent, false);
+
+            var layout = row.GetComponent<HorizontalLayoutGroup>();
+            layout.padding = padding;
+            layout.spacing = spacing;
+            layout.childAlignment = TextAnchor.MiddleLeft;
+            layout.childControlHeight = true;
+            layout.childControlWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.childForceExpandWidth = false;
+
+            return row;
+        }
+
+        public static GameObject CreateColumn(Transform parent, float spacing)
+        {
+            var column = new GameObject("Column", typeof(RectTransform), typeof(VerticalLayoutGroup));
+            column.transform.SetParent(parent, false);
+
+            var layout = column.GetComponent<VerticalLayoutGroup>();
+            layout.spacing = spacing;
+            layout.childAlignment = TextAnchor.UpperLeft;
+            layout.childControlHeight = true;
+            layout.childControlWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.childForceExpandWidth = true;
+
+            return column;
         }
 
         public static void ApplyCardVisual(GameObject card, float preferredHeight)
@@ -98,10 +123,14 @@ namespace UFC.UI.Theme
             }
 
             var image = card.GetComponent<Image>();
-            if (image != null)
+            if (image == null)
             {
-                image.color = PanelAlt;
+                image = card.AddComponent<Image>();
             }
+
+            image.color = Panel;
+            image.sprite = RoundedSquare;
+            image.type = RoundedSquare != null ? Image.Type.Sliced : Image.Type.Simple;
 
             var layoutElement = card.GetComponent<LayoutElement>();
             if (layoutElement == null)
@@ -121,16 +150,14 @@ namespace UFC.UI.Theme
                 return;
             }
 
-            if (isHeading && HeadingFont != null)
-            {
-                text.font = HeadingFont;
-            }
-            else if (PrimaryFont != null)
-            {
-                text.font = PrimaryFont;
-            }
+            Initialize();
 
+            text.font = PrimaryFont;
             text.color = isMuted ? TextMuted : TextPrimary;
+            if (isHeading)
+            {
+                text.fontStyle = FontStyle.Bold;
+            }
         }
 
         public static void EnsureListLayout(Transform listRoot)
@@ -170,79 +197,6 @@ namespace UFC.UI.Theme
 
             fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        }
-
-        private static void ApplyPanelColor(Transform root, string objectName)
-        {
-            var panel = FindByName(root, objectName);
-            if (panel == null)
-            {
-                return;
-            }
-
-            var image = panel.GetComponent<Image>();
-            if (image != null)
-            {
-                image.color = Panel;
-            }
-        }
-
-        private static void ApplyTextStyles(Transform root)
-        {
-            var texts = root.GetComponentsInChildren<Text>(true);
-            foreach (var text in texts)
-            {
-                var lowerName = text.name.ToLowerInvariant();
-                var isMuted = lowerName.Contains("subtitle")
-                    || lowerName.Contains("hint")
-                    || lowerName.Contains("desc");
-                var isHeading = lowerName.Contains("title")
-                    || lowerName.Contains("header")
-                    || text.fontSize >= 18;
-
-                ApplyTextStyle(text, isMuted, isHeading);
-            }
-        }
-
-        private static void ApplyButtonStyles(Transform root)
-        {
-            var buttons = root.GetComponentsInChildren<Button>(true);
-            foreach (var button in buttons)
-            {
-                var colors = button.colors;
-                colors.normalColor = PanelAlt;
-                colors.highlightedColor = new Color(PanelAlt.r + 0.05f, PanelAlt.g + 0.05f, PanelAlt.b + 0.05f, PanelAlt.a);
-                colors.pressedColor = Accent;
-                colors.selectedColor = Accent;
-                colors.disabledColor = new Color(PanelAlt.r, PanelAlt.g, PanelAlt.b, 0.5f);
-                colors.colorMultiplier = 1f;
-                colors.fadeDuration = 0.15f;
-                button.colors = colors;
-            }
-        }
-
-        private static Transform FindByName(Transform root, string objectName)
-        {
-            if (root == null)
-            {
-                return null;
-            }
-
-            if (root.name == objectName)
-            {
-                return root;
-            }
-
-            for (int i = 0; i < root.childCount; i++)
-            {
-                var found = FindByName(root.GetChild(i), objectName);
-                if (found != null)
-                {
-                    return found;
-                }
-            }
-
-            return null;
         }
     }
 }
